@@ -44,9 +44,9 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     console.log('Direct PDF text extraction failed, will try OCR fallback');
   }
   
-  // Step 2: Advanced OCR fallback using PDF.js + Tesseract.js
-  console.log('Attempting OCR text extraction...');
+  // Step 2: OCR fallback - wrapped in try-catch to prevent crashes
   try {
+    console.log('Attempting OCR text extraction...');
     const ocrText = await extractTextWithOCR(filePath);
     
     if (ocrText && ocrText.trim().length > 50) {
@@ -57,8 +57,8 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     }
     
   } catch (ocrError) {
-    console.error('OCR fallback failed, continuing with fallback:', ocrError);
-    // Don't let OCR errors crash the server
+    console.error('OCR fallback failed, continuing with direct text extraction:', ocrError);
+    // Don't let OCR errors crash the server - just log and continue
   }
   
   // Step 3: Final fallback

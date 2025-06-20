@@ -9,7 +9,7 @@ interface FlashcardProps {
   cards: Array<{
     question: string;
     answer: string;
-    difficulty: string;
+    difficulty?: string;
   }>;
 }
 

@@ -24,8 +24,8 @@ export async function extractTextWithOCR(filePath: string): Promise<string> {
     
   } catch (error) {
     console.error('OCR extraction failed:', error);
-    // Return a helpful message instead of empty string
-    return 'OCR text extraction failed. Please try uploading a text-based document or a clearer image file.';
+    // Don't throw - return fallback message to prevent server crash
+    return 'This document appears to contain images or complex formatting that could not be processed automatically. For best results, please upload a text-based PDF or plain text file with clear educational content.';
   }
 }
 
@@ -62,7 +62,7 @@ FlashGen works best with text-based documents that contain substantial education
     
   } catch (error) {
     console.error('PDF OCR processing failed:', error);
-    // Return helpful message instead of empty string
-    return 'PDF processing failed. Please try uploading a text-based PDF or convert your content to a plain text file.';
+    // Don't throw - return fallback message to prevent server crash
+    return 'This PDF could not be processed automatically. Please try uploading a text-based PDF where you can select and copy text, or convert your content to a plain text file for best results.';
   }
 }
