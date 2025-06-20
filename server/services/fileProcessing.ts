@@ -12,17 +12,15 @@ export async function extractTextFromFile(filePath: string, mimeType: string): P
     }
     
     if (mimeType === 'application/pdf') {
-      // For now, we'll implement basic PDF text extraction
-      // In a production environment, you would use a library like pdf-parse
       try {
-        const { default: pdfParse } = await import('pdf-parse');
+        const pdfParse = (await import('pdf-parse')).default;
         const buffer = await readFile(filePath);
         const data = await pdfParse(buffer);
-        return data.text;
+        return data.text || 'Unable to extract text from this PDF file.';
       } catch (error) {
         console.error('PDF parsing failed:', error);
         // Fallback: return placeholder text indicating PDF processing failed
-        return "PDF text extraction is not available. Please upload a text file instead.";
+        return "PDF text extraction failed. Please try uploading a text file instead or ensure your PDF contains readable text.";
       }
     }
     

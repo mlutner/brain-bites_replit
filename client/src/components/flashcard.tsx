@@ -18,6 +18,18 @@ export default function Flashcard({ cards }: FlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [completedCards, setCompletedCards] = useState<Set<number>>(new Set());
 
+  if (!cards || cards.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto text-center">
+        <Card className="p-8">
+          <CardContent className="pt-6">
+            <p className="text-muted-foreground">No flashcards available.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const currentCard = cards[currentIndex];
   const progress = ((currentIndex + 1) / cards.length) * 100;
 

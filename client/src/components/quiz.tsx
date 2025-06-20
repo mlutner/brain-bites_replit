@@ -21,8 +21,21 @@ export default function Quiz({ questions, title }: QuizProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
-  const [answers, setAnswers] = useState<Array<number | null>>(new Array(questions.length).fill(null));
+  const [answers, setAnswers] = useState<Array<number | null>>(new Array(questions?.length || 0).fill(null));
   const [quizCompleted, setQuizCompleted] = useState(false);
+
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto text-center">
+        <Card className="p-8">
+          <CardContent className="pt-6">
+            <h2 className="text-xl font-semibold text-foreground mb-2">No Quiz Available</h2>
+            <p className="text-muted-foreground">No quiz questions were found.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
