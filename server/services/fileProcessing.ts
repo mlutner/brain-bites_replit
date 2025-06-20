@@ -25,6 +25,7 @@ export async function extractTextFromFile(filePath: string, mimeType: string): P
 
 async function extractTextFromPDF(filePath: string): Promise<string> {
   let extractedText = '';
+  let ocrText = '';
   
   // Step 1: Try direct text extraction using pdf-parse
   try {
@@ -49,7 +50,7 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     console.log('Attempting OCR text extraction...');
     
     // Wrap OCR in a more robust error boundary
-    const ocrText = await new Promise<string>((resolve) => {
+    ocrText = await new Promise<string>((resolve) => {
       // Set a timeout to prevent hanging
       const timeout = setTimeout(() => {
         resolve('OCR timeout - unable to process');
@@ -83,9 +84,18 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     // Don't let OCR errors crash the server - just log and continue
   }
   
-  // Step 3: Final fallback
+  // Step 3: Final fallback - return any text we found, even if minimal
   if (extractedText.trim().length > 0) {
+    console.log('Using directly extracted text as fallback:', extractedText.length, 'characters');
     return extractedText;
+  }
+  
+  // If OCR produced some text, use it even if it seemed minimal
+  if (ocrText && ocrText.trim().length > 20 && 
+      !ocrText.includes('unable to process') && 
+      !ocrText.includes('could not be processed')) {
+    console.log('Using OCR text as final fallback:', ocrText.length, 'characters');
+    return ocrText;
   }
   
   return "Unable to extract readable text from this PDF. The document may contain only images, be password-protected, or have poor quality text. Please try uploading a text file or a PDF with better text quality.";

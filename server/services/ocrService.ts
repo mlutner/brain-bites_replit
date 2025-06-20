@@ -61,98 +61,82 @@ export async function extractTextWithOCR(filePath: string): Promise<string> {
 
 async function extractTextFromPDFWithOCR(filePath: string): Promise<string> {
   try {
-    console.log('Starting PDF OCR with improved approach...');
+    console.log('Starting enhanced PDF text extraction...');
     
-    // Step 1: Try embedded text extraction first
+    // Step 1: Try multiple PDF text extraction methods
     const buffer = await readFile(filePath);
     
+    // Method 1: pdf-parse (most reliable for text-based PDFs)
     try {
       const pdfParse = (await import('pdf-parse')).default;
       const data = await pdfParse(buffer);
       
-      if (data.text && data.text.trim().length > 100) {
-        console.log('Found embedded text in PDF:', data.text.length, 'characters');
-        return data.text;
+      if (data.text && data.text.trim().length > 50) {
+        console.log('Successfully extracted text via pdf-parse:', data.text.length, 'characters');
+        return data.text.trim();
       }
-      console.log('Minimal embedded text found, attempting image conversion...');
+      console.log('pdf-parse returned minimal text, trying alternative methods...');
     } catch (parseError) {
-      console.log('PDF text parsing failed, attempting image conversion...');
+      console.log('pdf-parse failed:', parseError instanceof Error ? parseError.message : parseError);
     }
     
-    // Step 2: Convert PDF to images and OCR if embedded text is insufficient
+    // Method 2: Try pdfjs-dist as fallback
     try {
-      const pdf2pic = (await import('pdf2pic')).default;
-      const fs = await import('fs');
-      const path = await import('path');
-      const os = await import('os');
+      const pdfjsLib = await import('pdfjs-dist');
       
-      // Create temporary directory for images
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pdf-ocr-'));
+      // Configure worker
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
       
-      const options = {
-        density: 200,
-        saveFilename: "page",
-        savePath: tempDir,
-        format: "png",
-        width: 1200,
-        height: 1600
-      };
+      const loadingTask = pdfjsLib.getDocument({
+        data: new Uint8Array(buffer),
+        verbosity: 0 // Suppress warnings
+      });
       
-      const convert = pdf2pic.fromPath(filePath, options);
-      
-      // Convert first 3 pages maximum to avoid long processing times
-      const pages = await convert.bulk(-1);
+      const pdf = await loadingTask.promise;
       let combinedText = '';
       
-      for (const page of pages) {
-        if (page.path && fs.existsSync(page.path)) {
-          try {
-            const pageBuffer = await readFile(page.path);
-            const result = await Tesseract.recognize(pageBuffer, 'eng', {
-              logger: () => {} // Disable logging for batch processing
-            });
-            
-            const pageText = result.data.text || '';
-            if (pageText.trim().length > 20) {
-              combinedText += pageText + '\n\n';
-            }
-            
-            // Clean up individual page file
-            fs.unlinkSync(page.path);
-          } catch (pageError) {
-            console.log('OCR failed for page, skipping...');
+      // Extract text from first 5 pages maximum
+      const maxPages = Math.min(pdf.numPages, 5);
+      
+      for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+        try {
+          const page = await pdf.getPage(pageNum);
+          const textContent = await page.getTextContent();
+          
+          const pageText = textContent.items
+            .map((item: any) => item.str || '')
+            .join(' ')
+            .trim();
+          
+          if (pageText.length > 10) {
+            combinedText += pageText + '\n\n';
           }
+        } catch (pageError) {
+          console.log(`Failed to extract text from page ${pageNum}, skipping...`);
         }
       }
       
-      // Clean up temporary directory
-      try {
-        fs.rmSync(tempDir, { recursive: true, force: true });
-      } catch (cleanupError) {
-        console.log('Temporary directory cleanup failed (non-critical)');
-      }
-      
-      if (combinedText.trim().length > 100) {
-        console.log('Successfully extracted text via PDF-to-image OCR:', combinedText.length, 'characters');
+      if (combinedText.trim().length > 50) {
+        console.log('Successfully extracted text via pdfjs-dist:', combinedText.length, 'characters');
         return combinedText.trim();
       }
       
-    } catch (conversionError) {
-      console.log('PDF to image conversion failed:', conversionError instanceof Error ? conversionError.message : conversionError);
+    } catch (pdfjsError) {
+      console.log('pdfjs-dist extraction failed:', pdfjsError instanceof Error ? pdfjsError.message : pdfjsError);
     }
     
-    // Final fallback message
-    return `This PDF appears to contain primarily images or scanned content that couldn't be processed automatically. 
+    // If no substantial text was extracted, return helpful guidance
+    return `This PDF appears to contain primarily images, scanned content, or complex formatting that couldn't be processed automatically.
 
-To get the best results:
-1. Try uploading a text-based PDF where you can select and copy text
-2. Convert the PDF content to a plain text file
-3. Ensure the document contains clear, readable text
+For the best results with FlashGen:
+• Upload a text-based PDF where you can select and copy text
+• Convert your content to a plain text (.txt) file
+• Ensure the document contains clear, readable educational content
 
-FlashGen works best with text-based documents containing substantial educational content.`;
+Text-based documents work much better for generating study materials.`;
     
   } catch (error) {
-    console.error('PDF OCR processing failed:', error);
-    return 'This PDF could not be processed automatically. Please try uploading a text-based PDF or convert your content to a plain text file for best results.';
+    console.error('PDF text extraction failed completely:', error);
+    return 'This PDF could not be processed. Please try uploading a text-based PDF or convert your content to a plain text file.';
   }
 }
