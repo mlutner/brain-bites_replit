@@ -248,12 +248,13 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             <div className="brain-logo">
               <img 
                 src={brainBitesLogo} 
                 alt="Brain Bites" 
-                className="h-10 w-auto"
+                className="h-15 w-auto"
+                style={{ height: '60px' }}
               />
             </div>
             
@@ -283,7 +284,7 @@ export default function Home() {
           <h1 className="text-5xl font-bold text-foreground mb-6">
             Instantly generate
             <br />
-            <span className="brain-gradient bg-clip-text text-transparent">flashcards and quizzes</span>
+            <span className="text-primary">flashcards and quizzes</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
             Study smarter by turning your notes or textbook pages into interactive flashcards and quizzes in seconds.
@@ -501,7 +502,7 @@ export default function Home() {
               <img 
                 src={brainBitesLogo} 
                 alt="Brain Bites" 
-                className="h-8 w-auto"
+                className="h-12 w-auto"
               />
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
