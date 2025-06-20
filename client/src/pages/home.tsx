@@ -287,8 +287,8 @@ export default function Home() {
             </div>
 
             <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Dashboard</a>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">My Library</a>
+              <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
+              <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">My Library</Link>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Settings</a>
             </nav>
 
