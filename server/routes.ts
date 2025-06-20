@@ -199,7 +199,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save generation
       const generation = await storage.createGeneration({
         userId,
+        fileId,
+        type,
+        title,
+        content: generatedContent,
+        difficulty: finalDifficulty,
+        questionCount: type === 'quiz' ? (questionCount || 10) : undefined
+      });
 
+      console.log('Generation saved with ID:', generation.id);
+      res.json(generation);
+
+    } catch (error) {
+      console.error('Content generation error:', error);
+      res.status(500).json({ 
+        message: 'Content generation failed',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
 
   // Dashboard stats endpoint
   app.get('/api/dashboard/stats', isAuthenticated, async (req: any, res) => {
@@ -268,36 +286,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
       res.status(500).json({ message: 'Failed to fetch dashboard stats' });
-    }
-  });
-
-        fileId,
-        type,
-        title,
-        content: generatedContent,
-        difficulty: finalDifficulty,
-        questionCount: type === 'quiz' ? (questionCount || 10) : null,
-      });
-
-      console.log('Generation saved with ID:', generation.id);
-
-      res.json({
-        id: generation.id,
-        type: generation.type,
-        title: generation.title,
-        content: generation.content,
-        difficulty: generation.difficulty,
-        questionCount: generation.questionCount,
-        createdAt: generation.createdAt,
-      });
-
-    } catch (error) {
-      console.error('Content generation error:', error);
-      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-      res.status(500).json({ 
-        message: 'Content generation failed', 
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
     }
   });
 
