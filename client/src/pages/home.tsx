@@ -389,8 +389,16 @@ export default function Home() {
 
         {/* Uploaded Files */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-foreground mb-6">Your Files</h2>
-          <div className="grid gap-4">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Upload className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold text-foreground">Your Documents</h2>
+              <p className="text-sm text-muted-foreground">Uploaded files ready for processing</p>
+            </div>
+          </div>
+          <div className="grid gap-4 p-4 bg-blue-50/30 rounded-xl border border-blue-100">
             {userFiles.length === 0 ? (
               <Card className="p-8 text-center">
                 <CardContent className="pt-6">
@@ -403,12 +411,12 @@ export default function Home() {
               </Card>
             ) : (
               userFiles.map((file) => (
-                <Card key={file.id} className="p-6 hover:shadow-sm transition-shadow">
+                <Card key={file.id} className="p-6 hover:shadow-sm transition-shadow bg-white border-blue-200">
                   <CardContent className="p-0">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-muted-foreground" />
+                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <FileText className="w-6 h-6 text-blue-600" />
                         </div>
                         <div>
                           <h3 className="font-medium text-foreground">{file.name}</h3>
@@ -494,8 +502,16 @@ export default function Home() {
 
         {/* Recent Generations */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-foreground mb-6">Recent Study Materials</h2>
-          <div className="grid gap-4">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+              <img src={flashcardIcon} alt="Study Materials" className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold text-foreground">Study Materials</h2>
+              <p className="text-sm text-muted-foreground">Generated flashcards and quizzes ready to study</p>
+            </div>
+          </div>
+          <div className="grid gap-4 p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl border border-primary/20">
             {recentGenerations.length === 0 ? (
               <Card className="p-8 text-center">
                 <CardContent className="pt-6">
@@ -508,15 +524,15 @@ export default function Home() {
               </Card>
             ) : (
               recentGenerations.map((generation) => (
-                <Card key={generation.id} className="p-6 hover:shadow-sm transition-shadow">
+                <Card key={generation.id} className="p-6 hover:shadow-sm transition-shadow bg-white border-primary/30">
                   <CardContent className="p-0">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center border border-primary/30">
                           {generation.type === 'flashcards' ? (
-                            <BookOpen className="w-5 h-5 text-muted-foreground" />
+                            <img src={flashcardIcon} alt="Flashcards" className="w-6 h-6" />
                           ) : (
-                            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+                            <img src={quizIcon} alt="Quiz" className="w-6 h-6" />
                           )}
                         </div>
                         <div>
