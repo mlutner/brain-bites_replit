@@ -45,20 +45,27 @@ async function extractTextFromPDFWithMistral(filePath: string): Promise<string> 
       includeImageBase64: false
     });
     
-    console.log('OCR Response received:', JSON.stringify(ocrResponse, null, 2));
+    console.log('OCR Response received - Pages:', ocrResponse.pages?.length);
     
     let extractedText = '';
     
     if (ocrResponse.pages && ocrResponse.pages.length > 0) {
       for (const page of ocrResponse.pages) {
-        if ((page as any).blocks && (page as any).blocks.length > 0) {
+        // Extract from markdown content (primary format from Mistral OCR)
+        if ((page as any).markdown) {
+          extractedText += (page as any).markdown + '\n\n';
+        }
+        // Fallback to blocks if available
+        else if ((page as any).blocks && (page as any).blocks.length > 0) {
           for (const block of (page as any).blocks) {
             if (block.text) {
               extractedText += block.text + ' ';
             }
           }
           extractedText += '\n\n';
-        } else if ((page as any).text) {
+        }
+        // Fallback to direct text
+        else if ((page as any).text) {
           extractedText += (page as any).text + '\n\n';
         }
       }
@@ -102,14 +109,21 @@ async function extractTextFromImageWithMistral(filePath: string, mimeType: strin
     
     if (ocrResponse.pages && ocrResponse.pages.length > 0) {
       for (const page of ocrResponse.pages) {
-        if ((page as any).blocks && (page as any).blocks.length > 0) {
+        // Extract from markdown content (primary format from Mistral OCR)
+        if ((page as any).markdown) {
+          extractedText += (page as any).markdown + '\n\n';
+        }
+        // Fallback to blocks if available
+        else if ((page as any).blocks && (page as any).blocks.length > 0) {
           for (const block of (page as any).blocks) {
             if (block.text) {
               extractedText += block.text + ' ';
             }
           }
           extractedText += '\n\n';
-        } else if ((page as any).text) {
+        }
+        // Fallback to direct text
+        else if ((page as any).text) {
           extractedText += (page as any).text + '\n\n';
         }
       }
