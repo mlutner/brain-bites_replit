@@ -139,7 +139,7 @@ export default function Home() {
         }, 500);
         return;
       }
-      
+
       toast({
         title: "Generation Failed",
         description: error instanceof Error ? error.message : "An error occurred",
@@ -200,7 +200,7 @@ export default function Home() {
 
       const result = await response.json();
       setGeneratedContent(result);
-      
+
       toast({
         title: "Success!",
         description: `Generated ${selectedFormat} successfully.`,
@@ -217,7 +217,7 @@ export default function Home() {
         }, 500);
         return;
       }
-      
+
       toast({
         title: "Generation Failed",
         description: error instanceof Error ? error.message : "An error occurred",
@@ -232,7 +232,7 @@ export default function Home() {
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) return "Just now";
     if (diffInHours < 24) return `${diffInHours} hours ago`;
     if (diffInHours < 48) return "Yesterday";
@@ -285,13 +285,13 @@ export default function Home() {
                 style={{ height: '100px' }}
               />
             </div>
-            
+
             <nav className="hidden md:flex space-x-8">
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Dashboard</a>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">My Library</a>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Settings</a>
             </nav>
-            
+
             <div className="flex items-center space-x-4">
               <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
                 <span className="text-sm font-medium text-muted-foreground">

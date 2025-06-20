@@ -199,6 +199,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save generation
       const generation = await storage.createGeneration({
         userId,
+
+
+  // Dashboard stats endpoint
+  app.get('/api/dashboard/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get user's generations and files
+      const generations = await storage.getUserGenerations(userId);
+      const files = await storage.getUserFiles(userId);
+      
+      // Calculate basic stats
+      const totalGenerations = generations.length;
+      const flashcardsCount = generations.filter(g => g.type === 'flashcards').length;
+      const quizzesCount = generations.filter(g => g.type === 'quiz').length;
+      const totalFiles = files.length;
+      
+      // Calculate study streak (consecutive days with generations)
+      const today = new Date();
+      const generationDates = generations
+        .map(g => new Date(g.createdAt).toDateString())
+        .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+      
+      let studyStreak = 0;
+      const uniqueDates = [...new Set(generationDates)];
+      
+      for (let i = 0; i < uniqueDates.length; i++) {
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() - i);
+        if (uniqueDates.includes(checkDate.toDateString())) {
+          studyStreak++;
+        } else {
+          break;
+        }
+      }
+      
+      // Recent activity (last 7 days)
+      const weekAgo = new Date();
+      weekAgo.setDate(today.getDate() - 7);
+      const recentGenerations = generations.filter(g => 
+        new Date(g.createdAt) >= weekAgo
+      );
+      
+      // Get difficulty distribution
+      const difficultyStats = {
+        easy: generations.filter(g => g.difficulty === 'easy').length,
+        medium: generations.filter(g => g.difficulty === 'medium').length,
+        hard: generations.filter(g => g.difficulty === 'hard').length,
+      };
+      
+      res.json({
+        totalGenerations,
+        flashcardsCount,
+        quizzesCount,
+        totalFiles,
+        studyStreak,
+        recentActivity: recentGenerations.length,
+        difficultyStats,
+        recentGenerations: recentGenerations.slice(0, 5).map(g => ({
+          id: g.id,
+          type: g.type,
+          title: g.title,
+          difficulty: g.difficulty,
+          createdAt: g.createdAt,
+        })),
+      });
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      res.status(500).json({ message: 'Failed to fetch dashboard stats' });
+    }
+  });
+
         fileId,
         type,
         title,
