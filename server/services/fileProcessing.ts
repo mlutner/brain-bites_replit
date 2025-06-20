@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
+import { extractTextWithOCR } from './ocrService';
 
 const readFile = promisify(fs.readFile);
 
@@ -43,51 +44,20 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     console.log('Direct PDF text extraction failed, will try OCR fallback');
   }
   
-  // Step 2: OCR fallback using Tesseract.js
+  // Step 2: Advanced OCR fallback using PDF.js + Tesseract.js
+  console.log('Attempting OCR text extraction...');
   try {
-    const pdf2pic = (await import('pdf2pic')).default;
-    const Tesseract = (await import('tesseract.js')).default;
+    const ocrText = await extractTextWithOCR(filePath);
     
-    // Convert PDF to images
-    const convert = pdf2pic.fromPath(filePath, {
-      density: 300,
-      saveFilename: "page",
-      savePath: "/tmp",
-      format: "png",
-      width: 2000,
-      height: 2000
-    });
-    
-    const imageResults = await convert.bulk(-1); // Convert all pages
-    
-    let ocrText = '';
-    
-    // OCR each page
-    for (const result of imageResults) {
-      try {
-        const worker = await Tesseract.createWorker('eng');
-        const { data: { text } } = await worker.recognize(result.path);
-        ocrText += text + '\n';
-        await worker.terminate();
-        
-        // Clean up temporary image file
-        try {
-          fs.unlinkSync(result.path);
-        } catch (cleanupError) {
-          console.warn('Failed to cleanup temporary file:', result.path);
-        }
-      } catch (pageError) {
-        console.error('OCR failed for page:', pageError);
-      }
-    }
-    
-    if (ocrText.trim().length > 0) {
+    if (ocrText && ocrText.trim().length > 50) {
       console.log('OCR text extraction successful:', ocrText.length, 'characters');
       return ocrText;
+    } else {
+      console.log('OCR extracted minimal text:', ocrText.length, 'characters');
     }
     
   } catch (ocrError) {
-    console.log('OCR fallback not available (requires GraphicsMagick/ImageMagick)');
+    console.log('OCR fallback failed:', ocrError);
   }
   
   // Step 3: Final fallback
