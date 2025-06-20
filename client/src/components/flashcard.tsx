@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight, RotateCcw, CheckCircle } from "lucide-react";
-import brainBitesLogo from "@assets/image_1750458395951.png";
 
 interface FlashcardProps {
   cards: Array<{
@@ -119,14 +118,7 @@ export default function Flashcard({ cards }: FlashcardProps) {
           onClick={handleFlip}
         >
           {/* Front */}
-          <Card className="flashcard-front brain-card border-2 shadow-lg relative">
-            <div className="absolute top-4 right-4 z-10">
-              <img 
-                src={brainBitesLogo} 
-                alt="Brain Bites" 
-                className="h-8 w-auto opacity-60"
-              />
-            </div>
+          <Card className="flashcard-front brain-card border-2 shadow-lg">
             <CardContent className="h-full flex items-center justify-center text-center">
               <div className="max-w-md mx-auto">
                 <h3 className="text-2xl font-semibold text-foreground mb-6 leading-relaxed">
@@ -145,14 +137,7 @@ export default function Flashcard({ cards }: FlashcardProps) {
           </Card>
 
           {/* Back */}
-          <Card className="flashcard-back border-2 shadow-lg relative">
-            <div className="absolute top-4 right-4 z-10">
-              <img 
-                src={brainBitesLogo} 
-                alt="Brain Bites" 
-                className="h-8 w-auto opacity-40"
-              />
-            </div>
+          <Card className="flashcard-back border-2 shadow-lg">
             <CardContent className="h-full flex items-center justify-center text-center">
               <div className="max-w-md mx-auto">
                 <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4">

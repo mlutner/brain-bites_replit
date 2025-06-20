@@ -244,7 +244,28 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Loading Overlay */}
+      {generateMutation.isPending && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="pt-6 text-center">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                Generating Study Materials
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Our AI is creating personalized flashcards and quizzes from your document. This usually takes 10-30 seconds.
+              </p>
+              <div className="flex items-center justify-center space-x-2 text-primary">
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -398,8 +419,17 @@ export default function Home() {
                           onClick={() => handleGenerateContent(file.id, 'flashcards')}
                           className="bg-primary/10 border-primary/30 text-primary hover:bg-primary hover:text-white"
                         >
-                          <BookOpen className="w-4 h-4 mr-2" />
-                          Flashcards
+                          {generateMutation.isPending && isGenerating ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <BookOpen className="w-4 h-4 mr-2" />
+                              Flashcards
+                            </>
+                          )}
                         </Button>
                         <Button 
                           variant="outline" 
@@ -408,8 +438,17 @@ export default function Home() {
                           onClick={() => handleGenerateContent(file.id, 'quiz')}
                           className="bg-secondary/10 border-secondary/30 text-secondary hover:bg-secondary hover:text-white"
                         >
-                          <HelpCircle className="w-4 h-4 mr-2" />
-                          Quiz
+                          {generateMutation.isPending && isGenerating ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <HelpCircle className="w-4 h-4 mr-2" />
+                              Quiz
+                            </>
+                          )}
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

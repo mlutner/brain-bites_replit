@@ -10,6 +10,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import Flashcard from "@/components/flashcard";
 import Quiz from "@/components/quiz";
+import brainBitesLogo from "@assets/image_1750458395951.png";
 
 export default function StudySession() {
   const { id } = useParams();
@@ -121,12 +122,6 @@ export default function StudySession() {
                   Back
                 </Button>
               </Link>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">F</span>
-                </div>
-                <span className="font-semibold text-xl text-foreground">FlashGen</span>
-              </div>
             </div>
             
             <div className="text-center">
@@ -139,7 +134,13 @@ export default function StudySession() {
               </p>
             </div>
             
-            <div className="w-24"></div> {/* Spacer for centering */}
+            <div className="flex items-center">
+              <img 
+                src={brainBitesLogo} 
+                alt="Brain Bites" 
+                className="h-10 w-auto"
+              />
+            </div>
           </div>
         </div>
       </header>
