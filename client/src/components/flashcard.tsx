@@ -113,34 +113,46 @@ export default function Flashcard({ cards }: FlashcardProps) {
 
       {/* Flashcard */}
       <div className="flashcard-flip">
-        <Card 
-          className={`flashcard-inner cursor-pointer min-h-[300px] ${isFlipped ? 'flipped' : ''}`}
+        <div 
+          className={`flashcard-inner ${isFlipped ? 'flipped' : ''}`}
           onClick={handleFlip}
         >
           {/* Front */}
-          <CardContent className="flashcard-front p-8 flex items-center justify-center text-center min-h-[300px]">
-            <div>
-              <h3 className="text-lg font-medium text-foreground mb-4">
-                {currentCard.question}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Click to reveal answer
-              </p>
-            </div>
-          </CardContent>
+          <Card className="flashcard-front brain-card border-2 shadow-lg">
+            <CardContent className="h-full flex items-center justify-center text-center">
+              <div className="max-w-md mx-auto">
+                <h3 className="text-2xl font-semibold text-foreground mb-6 leading-relaxed">
+                  {currentCard.question}
+                </h3>
+                <div className="flex items-center justify-center space-x-2 text-primary">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Click to reveal answer
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Back */}
-          <CardContent className="flashcard-back p-8 flex items-center justify-center text-center min-h-[300px] bg-muted/20">
-            <div>
-              <h4 className="text-sm font-medium text-muted-foreground mb-3">
-                Answer:
-              </h4>
-              <p className="text-lg text-foreground">
-                {currentCard.answer}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          <Card className="flashcard-back border-2 shadow-lg">
+            <CardContent className="h-full flex items-center justify-center text-center">
+              <div className="max-w-md mx-auto">
+                <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">💡</span>
+                </div>
+                <h4 className="text-sm font-semibold text-secondary mb-4 uppercase tracking-wider">
+                  Answer
+                </h4>
+                <p className="text-xl text-foreground leading-relaxed">
+                  {currentCard.answer}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Controls */}
