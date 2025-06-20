@@ -80,49 +80,26 @@ async function extractTextFromPDFWithOCR(filePath: string): Promise<string> {
       console.log('pdf-parse failed:', parseError instanceof Error ? parseError.message : parseError);
     }
     
-    // Method 2: Try pdfjs-dist as fallback
+    // Method 2: Try alternative PDF processing with more lenient requirements
     try {
-      const pdfjsLib = await import('pdfjs-dist');
+      const pdfParse2 = (await import('pdf-parse')).default;
       
-      // Configure worker
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+      // Try with different options
+      const options = {
+        normalizeWhitespace: false,
+        disableCombineTextItems: false
+      };
       
-      const loadingTask = pdfjsLib.getDocument({
-        data: new Uint8Array(buffer),
-        verbosity: 0 // Suppress warnings
-      });
+      const data2 = await pdfParse2(buffer, options);
+      const altText = data2.text || '';
       
-      const pdf = await loadingTask.promise;
-      let combinedText = '';
-      
-      // Extract text from first 5 pages maximum
-      const maxPages = Math.min(pdf.numPages, 5);
-      
-      for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
-        try {
-          const page = await pdf.getPage(pageNum);
-          const textContent = await page.getTextContent();
-          
-          const pageText = textContent.items
-            .map((item: any) => item.str || '')
-            .join(' ')
-            .trim();
-          
-          if (pageText.length > 10) {
-            combinedText += pageText + '\n\n';
-          }
-        } catch (pageError) {
-          console.log(`Failed to extract text from page ${pageNum}, skipping...`);
-        }
+      if (altText.trim().length > 10) {
+        console.log('Successfully extracted text via alternative pdf-parse method:', altText.length, 'characters');
+        return altText.trim();
       }
       
-      if (combinedText.trim().length > 50) {
-        console.log('Successfully extracted text via pdfjs-dist:', combinedText.length, 'characters');
-        return combinedText.trim();
-      }
-      
-    } catch (pdfjsError) {
-      console.log('pdfjs-dist extraction failed:', pdfjsError instanceof Error ? pdfjsError.message : pdfjsError);
+    } catch (altParseError) {
+      console.log('Alternative pdf-parse method failed:', altParseError instanceof Error ? altParseError.message : altParseError);
     }
     
     // If no substantial text was extracted, return helpful guidance

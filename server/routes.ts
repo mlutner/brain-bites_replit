@@ -64,14 +64,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         extractedText: null,
       });
 
-      // Extract text in background
-      try {
-        const extractedText = await extractTextFromFile(req.file.path, req.file.mimetype);
-        await storage.updateFileText(fileRecord.id, extractedText);
-      } catch (error) {
-        console.error('Text extraction failed:', error);
-        // Don't fail the upload, just log the error
-      }
+      // Extract text in background with better error handling
+      setImmediate(async () => {
+        try {
+          console.log(`Starting text extraction for file: ${req.file.originalname}`);
+          const extractedText = await extractTextFromFile(req.file.path, req.file.mimetype);
+          console.log(`Text extraction completed: ${extractedText.length} characters`);
+          await storage.updateFileText(fileRecord.id, extractedText);
+          console.log(`Database updated for file ID: ${fileRecord.id}`);
+        } catch (error) {
+          console.error('Text extraction failed:', error);
+          // Store error message as extracted text so user knows what happened
+          const errorMessage = `Text extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}. Please try uploading a different file or convert to plain text.`;
+          await storage.updateFileText(fileRecord.id, errorMessage);
+        }
+      });
 
       res.json({
         id: fileRecord.id,

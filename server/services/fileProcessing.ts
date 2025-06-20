@@ -34,8 +34,8 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     const data = await pdfParse(buffer);
     extractedText = data.text || '';
     
-    // If we got substantial text (more than 100 characters), use it
-    if (extractedText.trim().length > 100) {
+    // If we got substantial text (more than 50 characters), use it
+    if (extractedText.trim().length > 50) {
       console.log('PDF text extraction successful:', extractedText.length, 'characters');
       return extractedText;
     }
