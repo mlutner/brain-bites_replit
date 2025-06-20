@@ -70,7 +70,7 @@ export default function Home() {
     enabled: isAuthenticated,
     refetchInterval: (data) => {
       // Auto-refresh every 3 seconds if any files are still processing
-      const hasProcessingFiles = data?.some(file => !file.hasText);
+      const hasProcessingFiles = Array.isArray(data) && data.some((file: UploadedFile) => !file.hasText);
       return hasProcessingFiles ? 3000 : false;
     },
   });
