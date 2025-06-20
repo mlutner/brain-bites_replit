@@ -248,13 +248,13 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-24">
             <div className="brain-logo">
               <img 
                 src={brainBitesLogo} 
                 alt="Brain Bites" 
-                className="h-15 w-auto"
-                style={{ height: '60px' }}
+                className="h-auto w-auto"
+                style={{ height: '90px' }}
               />
             </div>
             
@@ -502,7 +502,8 @@ export default function Home() {
               <img 
                 src={brainBitesLogo} 
                 alt="Brain Bites" 
-                className="h-12 w-auto"
+                className="h-auto w-auto"
+                style={{ height: '72px' }}
               />
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
