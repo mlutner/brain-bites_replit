@@ -114,6 +114,8 @@ Changelog:
   - Implemented minimalist Linear-inspired design with responsive UI
   - Added error handling and loading states throughout the application
   - Successfully deployed and tested all core functionality
+  - Debugged and confirmed quiz/flashcard generation working with OpenAI API
+  - Improved PDF text extraction error handling and logging
 
 ## User Preferences
 

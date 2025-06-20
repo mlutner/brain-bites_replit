@@ -40,7 +40,7 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     
     console.log('Minimal text extracted via direct method, trying OCR fallback');
   } catch (error) {
-    console.error('Direct PDF text extraction failed:', error);
+    console.log('Direct PDF text extraction failed, will try OCR fallback');
   }
   
   // Step 2: OCR fallback using Tesseract.js
@@ -87,7 +87,7 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     }
     
   } catch (ocrError) {
-    console.error('OCR fallback failed:', ocrError);
+    console.log('OCR fallback not available (requires GraphicsMagick/ImageMagick)');
   }
   
   // Step 3: Final fallback
