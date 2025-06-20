@@ -64,10 +64,15 @@ export default function Home() {
     enabled: isAuthenticated,
   });
 
-  // Fetch uploaded files
+  // Fetch uploaded files with auto-refresh for processing files
   const { data: userFiles = [] } = useQuery<UploadedFile[]>({
     queryKey: ["/api/files"],
     enabled: isAuthenticated,
+    refetchInterval: (data) => {
+      // Auto-refresh every 3 seconds if any files are still processing
+      const hasProcessingFiles = data?.some(file => !file.hasText);
+      return hasProcessingFiles ? 3000 : false;
+    },
   });
 
   // Delete file mutation
@@ -412,44 +417,53 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          disabled={!file.hasText || generateMutation.isPending}
-                          onClick={() => handleGenerateContent(file.id, 'flashcards')}
-                          className="bg-primary/10 border-primary/30 text-primary hover:bg-primary hover:text-white"
-                        >
-                          {generateMutation.isPending && isGenerating ? (
-                            <>
-                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                              Generating...
-                            </>
-                          ) : (
-                            <>
-                              <BookOpen className="w-4 h-4 mr-2" />
-                              Flashcards
-                            </>
-                          )}
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          disabled={!file.hasText || generateMutation.isPending}
-                          onClick={() => handleGenerateContent(file.id, 'quiz')}
-                          className="bg-secondary/10 border-secondary/30 text-secondary hover:bg-secondary hover:text-white"
-                        >
-                          {generateMutation.isPending && isGenerating ? (
-                            <>
-                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                              Generating...
-                            </>
-                          ) : (
-                            <>
-                              <HelpCircle className="w-4 h-4 mr-2" />
-                              Quiz
-                            </>
-                          )}
-                        </Button>
+                        {file.hasText ? (
+                          <>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              disabled={generateMutation.isPending}
+                              onClick={() => handleGenerateContent(file.id, 'flashcards')}
+                              className="bg-primary/10 border-primary/30 text-primary hover:bg-primary hover:text-white"
+                            >
+                              {generateMutation.isPending && isGenerating ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                                  Generating...
+                                </>
+                              ) : (
+                                <>
+                                  <BookOpen className="w-4 h-4 mr-2" />
+                                  Flashcards
+                                </>
+                              )}
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              disabled={generateMutation.isPending}
+                              onClick={() => handleGenerateContent(file.id, 'quiz')}
+                              className="bg-secondary/10 border-secondary/30 text-secondary hover:bg-secondary hover:text-white"
+                            >
+                              {generateMutation.isPending && isGenerating ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                                  Generating...
+                                </>
+                              ) : (
+                                <>
+                                  <HelpCircle className="w-4 h-4 mr-2" />
+                                  Quiz
+                                </>
+                              )}
+                            </Button>
+                          </>
+                        ) : (
+                          <div className="flex items-center space-x-2 text-muted-foreground">
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            <span className="text-sm">Processing document...</span>
+                          </div>
+                        )}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm">
