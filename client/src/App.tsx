@@ -12,9 +12,23 @@ import StudySession from "@/pages/study-session";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // Add debugging info
+  console.log('Router state:', { isAuthenticated, isLoading });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
+      {!isAuthenticated ? (
         <Route path="/" component={Landing} />
       ) : (
         <>
