@@ -119,6 +119,9 @@ Changelog:
   - Fixed server crashes caused by PDF processing errors with global error handlers
   - Enhanced OCR service with improved error isolation and pdf2pic integration
   - Application now handles problematic PDF files gracefully without crashing
+  - Replaced unreliable Tesseract OCR with OpenAI Vision API for superior text extraction
+  - Implemented AI-powered PDF and image text extraction using GPT-4o Vision
+  - Significantly improved text extraction accuracy and reliability for scanned documents
 
 ## User Preferences
 
