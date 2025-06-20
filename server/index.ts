@@ -2,6 +2,17 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+// Add global error handlers to prevent crashes from OCR/PDF processing
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception (handled safely):', error.message);
+  // Don't exit the process - just log the error
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection (handled safely):', reason);
+  // Don't exit the process - just log the error
+});
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

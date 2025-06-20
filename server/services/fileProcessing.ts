@@ -48,17 +48,30 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
   try {
     console.log('Attempting OCR text extraction...');
     
-    // Set a timeout to prevent hanging
-    const ocrPromise = extractTextWithOCR(filePath);
-    const timeoutPromise = new Promise<string>((resolve) => {
-      setTimeout(() => resolve('OCR timeout - unable to process'), 60000);
+    // Wrap OCR in a more robust error boundary
+    const ocrText = await new Promise<string>((resolve) => {
+      // Set a timeout to prevent hanging
+      const timeout = setTimeout(() => {
+        resolve('OCR timeout - unable to process');
+      }, 30000); // Reduced timeout
+      
+      // Handle the OCR process with full error isolation
+      extractTextWithOCR(filePath)
+        .then((text) => {
+          clearTimeout(timeout);
+          resolve(text || 'No text extracted via OCR');
+        })
+        .catch((error) => {
+          clearTimeout(timeout);
+          console.error('OCR process failed safely:', error.message || error);
+          resolve('OCR processing failed - document may contain complex formatting');
+        });
     });
-    
-    const ocrText = await Promise.race([ocrPromise, timeoutPromise]);
     
     if (ocrText && ocrText.trim().length > 50 && 
         !ocrText.includes('could not be processed') && 
-        !ocrText.includes('OCR timeout')) {
+        !ocrText.includes('OCR timeout') &&
+        !ocrText.includes('OCR processing failed')) {
       console.log('OCR text extraction successful:', ocrText.length, 'characters');
       return ocrText;
     } else {

@@ -5,36 +5,52 @@ export async function extractTextWithOCR(filePath: string): Promise<string> {
   try {
     console.log('Starting OCR text extraction...');
     
-    // For PDF files, skip Tesseract and use pdf-parse only
+    // For PDF files, skip Tesseract completely and use pdf-parse only
     if (filePath.toLowerCase().endsWith('.pdf')) {
       return await extractTextFromPDFWithOCR(filePath);
     }
     
-    // For image files, use Tesseract with better error handling
-    try {
-      const buffer = await readFile(filePath);
+    // For image files, use Tesseract with comprehensive error handling
+    return await new Promise<string>((resolve) => {
+      // Set up timeout
+      const timeout = setTimeout(() => {
+        resolve('OCR timeout after 25 seconds - document may be too complex');
+      }, 25000);
       
-      // Add timeout and better error handling for Tesseract
-      const timeoutPromise = new Promise<string>((_, reject) => {
-        setTimeout(() => reject(new Error('OCR timeout after 30 seconds')), 30000);
-      });
-      
-      const ocrPromise = Tesseract.recognize(buffer, 'eng', {
-        logger: m => {
-          if (m.status === 'recognizing text') {
-            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+      // Process with full error isolation
+      (async () => {
+        try {
+          const buffer = await readFile(filePath);
+          
+          const result = await Tesseract.recognize(buffer, 'eng', {
+            logger: m => {
+              if (m.status === 'recognizing text') {
+                console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+              }
+            }
+          });
+          
+          clearTimeout(timeout);
+          const text = result.data.text || '';
+          
+          if (text.trim().length > 10) {
+            resolve(text);
+          } else {
+            resolve('This image file could not be processed with OCR. Please try uploading a clearer image or convert your content to a text file.');
           }
+          
+        } catch (tesseractError) {
+          clearTimeout(timeout);
+          const errorMsg = tesseractError instanceof Error ? tesseractError.message : String(tesseractError);
+          console.error('Tesseract OCR failed safely:', errorMsg);
+          resolve('This image file could not be processed with OCR. Please try uploading a clearer image or convert your content to a text file.');
         }
-      }).then(result => result.data.text || '');
-      
-      const text = await Promise.race([ocrPromise, timeoutPromise]);
-      return text;
-      
-    } catch (tesseractError) {
-      console.error('Tesseract OCR failed:', tesseractError);
-      // Return helpful message instead of crashing
-      return 'This image file could not be processed with OCR. Please try uploading a clearer image or convert your content to a text file.';
-    }
+      })().catch((error) => {
+        clearTimeout(timeout);
+        console.error('OCR process failed with error:', error.message || error);
+        resolve('OCR processing encountered an error. Please try uploading a different file format.');
+      });
+    });
     
   } catch (error) {
     console.error('OCR extraction failed:', error);
