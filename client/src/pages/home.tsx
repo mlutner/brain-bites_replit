@@ -248,11 +248,14 @@ export default function Home() {
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">F</span>
+            <div className="brain-logo">
+              <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center relative">
+                <span className="text-2xl">🧠</span>
+                <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">👓</span>
+                </div>
               </div>
-              <span className="font-semibold text-xl text-foreground">FlashGen</span>
+              <span className="font-bold text-2xl text-primary">Brain Bites</span>
             </div>
             
             <nav className="hidden md:flex space-x-8">
@@ -278,12 +281,16 @@ export default function Home() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <section className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Generate Study Materials in Seconds
+          <h1 className="text-5xl font-bold text-foreground mb-6">
+            Instantly generate
+            <br />
+            <span className="brain-gradient bg-clip-text text-transparent">flashcards and quizzes</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Upload your documents and let AI create personalized flashcards and quizzes 
-            tailored to your learning needs.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            Study smarter by turning your notes or textbook pages into interactive flashcards and quizzes in seconds.
+          </p>
+          <p className="text-lg text-muted-foreground">
+            Great for students, teachers, and lifelong learners.
           </p>
         </section>
 
@@ -304,21 +311,23 @@ export default function Home() {
 
         {/* Generate Button */}
         <section className="text-center mb-12">
-          <Button 
-            onClick={handleGenerate}
-            disabled={isGenerating || uploadedFiles.length === 0 || !selectedFormat}
-            size="lg"
-            className="px-8 py-4 text-lg font-semibold shadow-lg"
-          >
-            {isGenerating ? (
-              <>
-                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2"></div>
-                Generating...
-              </>
-            ) : (
-              "Generate Study Materials"
-            )}
-          </Button>
+          <div className="inline-block p-1 bg-gradient-to-r from-primary to-secondary rounded-xl">
+            <Button 
+              onClick={handleGenerate}
+              disabled={isGenerating || uploadedFiles.length === 0 || !selectedFormat}
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold shadow-lg rounded-xl"
+            >
+              {isGenerating ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Generating...
+                </>
+              ) : (
+                "Scan PDF or Text"
+              )}
+            </Button>
+          </div>
           <p className="text-sm text-muted-foreground mt-3">
             Processing typically takes 30-60 seconds
           </p>
@@ -387,6 +396,7 @@ export default function Home() {
                           size="sm"
                           disabled={!file.hasText || generateMutation.isPending}
                           onClick={() => handleGenerateContent(file.id, 'flashcards')}
+                          className="bg-primary/10 border-primary/30 text-primary hover:bg-primary hover:text-white"
                         >
                           <BookOpen className="w-4 h-4 mr-2" />
                           Flashcards
@@ -396,6 +406,7 @@ export default function Home() {
                           size="sm"
                           disabled={!file.hasText || generateMutation.isPending}
                           onClick={() => handleGenerateContent(file.id, 'quiz')}
+                          className="bg-secondary/10 border-secondary/30 text-secondary hover:bg-secondary hover:text-white"
                         >
                           <HelpCircle className="w-4 h-4 mr-2" />
                           Quiz

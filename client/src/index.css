@@ -3,48 +3,50 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(0, 0%, 98%);
-  --foreground: hsl(240, 10%, 11%);
-  --muted: hsl(210, 40%, 96%);
-  --muted-foreground: hsl(215, 16%, 47%);
+  /* Brain Bites color scheme - Light cream background with green and pink accents */
+  --background: hsl(32, 50%, 95%); /* Light cream/beige background */
+  --foreground: hsl(200, 25%, 20%); /* Dark blue-gray text */
+  --muted: hsl(32, 30%, 90%); /* Light beige/cream */
+  --muted-foreground: hsl(200, 15%, 50%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(240, 10%, 11%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(240, 10%, 11%);
-  --border: hsl(214, 32%, 91%);
-  --input: hsl(214, 32%, 91%);
-  --primary: hsl(221, 83%, 53%);
-  --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(210, 40%, 96%);
-  --secondary-foreground: hsl(222, 84%, 5%);
-  --accent: hsl(210, 40%, 96%);
-  --accent-foreground: hsl(222, 84%, 5%);
+  --popover-foreground: hsl(200, 25%, 20%);
+  --card: hsl(0, 0%, 100%); /* White cards */
+  --card-foreground: hsl(200, 25%, 20%);
+  --border: hsl(32, 20%, 85%); /* Soft cream border */
+  --input: hsl(32, 20%, 85%);
+  --primary: hsl(150, 70%, 35%); /* Brain Bites green */
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(340, 85%, 75%); /* Brain Bites pink */
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(150, 60%, 90%); /* Light green accent */
+  --accent-foreground: hsl(150, 70%, 25%);
   --destructive: hsl(0, 84%, 60%);
   --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(221, 83%, 53%);
-  --radius: 0.75rem;
+  --ring: hsl(150, 70%, 35%);
+  --radius: 0.75rem; /* Slightly more rounded for friendly feel */
 }
 
 .dark {
-  --background: hsl(240, 10%, 4%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(240, 4%, 16%);
-  --muted-foreground: hsl(240, 5%, 65%);
-  --popover: hsl(240, 10%, 4%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 4%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 4%, 16%);
-  --input: hsl(240, 4%, 16%);
-  --primary: hsl(221, 83%, 53%);
-  --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(240, 4%, 16%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(240, 4%, 16%);
-  --accent-foreground: hsl(0, 0%, 98%);
+  /* Dark mode with green and pink accents on dark background */
+  --background: hsl(200, 25%, 8%);
+  --foreground: hsl(32, 50%, 95%);
+  --muted: hsl(200, 25%, 15%);
+  --muted-foreground: hsl(200, 15%, 65%);
+  --popover: hsl(200, 25%, 12%);
+  --popover-foreground: hsl(32, 50%, 95%);
+  --card: hsl(200, 25%, 12%);
+  --card-foreground: hsl(32, 50%, 95%);
+  --border: hsl(200, 25%, 18%);
+  --input: hsl(200, 25%, 18%);
+  --primary: hsl(150, 70%, 45%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(340, 85%, 70%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(150, 60%, 20%);
+  --accent-foreground: hsl(150, 70%, 80%);
   --destructive: hsl(0, 62%, 30%);
   --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(221, 83%, 53%);
+  --ring: hsl(150, 70%, 45%);
 }
 
 @layer base {
@@ -148,4 +150,54 @@
   50% {
     opacity: 0.5;
   }
+}
+
+/* Brain Bites custom components */
+.brain-gradient {
+  background: linear-gradient(135deg, hsl(150, 70%, 35%) 0%, hsl(340, 85%, 75%) 100%);
+}
+
+.brain-card {
+  background: hsl(0, 0%, 100%);
+  border: 2px solid hsl(32, 20%, 85%);
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.brain-card:hover {
+  border-color: hsl(150, 70%, 35%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.brain-button {
+  background: hsl(150, 70%, 35%);
+  color: hsl(0, 0%, 100%);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.brain-button:hover {
+  background: hsl(150, 70%, 30%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.brain-button-secondary {
+  background: hsl(340, 85%, 75%);
+  color: hsl(0, 0%, 100%);
+}
+
+.brain-button-secondary:hover {
+  background: hsl(340, 85%, 70%);
+}
+
+.brain-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
