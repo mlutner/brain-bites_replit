@@ -1,4 +1,9 @@
+import { Mistral } from '@mistralai/mistralai';
 import { readFile } from 'fs/promises';
+
+const client = new Mistral({
+  apiKey: process.env.MISTRAL_API_KEY || ''
+});
 
 export async function extractTextWithMistral(filePath: string, mimeType: string): Promise<string> {
   try {
@@ -22,160 +27,92 @@ export async function extractTextWithMistral(filePath: string, mimeType: string)
 
 async function extractTextFromPDFWithMistral(filePath: string): Promise<string> {
   try {
-    console.log('Processing PDF with Mistral Vision API...');
+    console.log('Processing PDF with Mistral OCR API...');
     
-    // For PDFs, let's try to convert to images first since Mistral doesn't directly support PDF
-    const pdf2pic = (await import('pdf2pic')).default;
-    const fs = await import('fs');
-    const path = await import('path');
-    const os = await import('os');
+    const pdfBuffer = await readFile(filePath);
+    const base64Pdf = pdfBuffer.toString('base64');
     
-    // Create temporary directory
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pdf-mistral-'));
+    const ocrResponse = await client.ocr.process({
+      model: "mistral-ocr-latest",
+      document: {
+        type: "document_url",
+        documentUrl: `data:application/pdf;base64,${base64Pdf}`
+      },
+      includeImageBase64: false
+    });
     
-    const options = {
-      density: 300,
-      saveFilename: "page",
-      savePath: tempDir,
-      format: "png",
-      width: 2000,
-      height: 2600
-    };
+    let extractedText = '';
     
-    const convert = pdf2pic.fromPath(filePath, options);
-    const pages = await convert.bulk(-1);
-    let combinedText = '';
-    
-    // Process first 3 pages with Mistral Vision
-    for (let i = 0; i < Math.min(pages.length, 3); i++) {
-      const page = pages[i];
-      
-      if (page.path && fs.existsSync(page.path)) {
-        try {
-          console.log(`Processing page ${i + 1} with Mistral Vision...`);
-          
-          const imageBuffer = await readFile(page.path);
-          const base64Image = imageBuffer.toString('base64');
-          
-          const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${process.env.MISTRAL_API_KEY}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              model: "pixtral-12b-2409",
-              messages: [
-                {
-                  role: "user",
-                  content: [
-                    {
-                      type: "text",
-                      text: "Please extract all the text from this image. Focus on educational content, headings, paragraphs, and any readable text. Preserve the structure and formatting as much as possible. Return only the extracted text without any commentary."
-                    },
-                    {
-                      type: "image_url",
-                      image_url: `data:image/png;base64,${base64Image}`
-                    }
-                  ]
-                }
-              ],
-              max_tokens: 2000,
-              temperature: 0
-            })
-          });
-
-          if (response.ok) {
-            const result = await response.json();
-            const pageText = result.choices?.[0]?.message?.content || '';
-            
-            if (pageText.trim().length > 20) {
-              combinedText += pageText + '\n\n';
-              console.log(`Extracted ${pageText.length} characters from page ${i + 1}`);
+    if (ocrResponse.pages && ocrResponse.pages.length > 0) {
+      for (const page of ocrResponse.pages) {
+        if ((page as any).blocks && (page as any).blocks.length > 0) {
+          for (const block of (page as any).blocks) {
+            if (block.text) {
+              extractedText += block.text + ' ';
             }
           }
-          
-          // Clean up page file
-          fs.unlinkSync(page.path);
-          
-        } catch (pageError) {
-          console.error(`Failed to process page ${i + 1}:`, pageError);
+          extractedText += '\n\n';
+        } else if ((page as any).text) {
+          extractedText += (page as any).text + '\n\n';
         }
       }
     }
     
-    // Clean up temporary directory
-    try {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    } catch (cleanupError) {
-      console.log('Temporary directory cleanup failed (non-critical)');
-    }
-
-    if (combinedText.trim().length > 50) {
-      console.log('Successfully extracted text via Mistral Vision:', combinedText.length, 'characters');
-      return combinedText.trim();
+    if (extractedText.trim().length > 50) {
+      console.log('Successfully extracted text via Mistral OCR:', extractedText.length, 'characters');
+      return extractedText.trim();
     }
     
-    return 'Could not extract sufficient text from this PDF using Mistral Vision. Please try uploading a text-based PDF or convert to plain text.';
+    return 'Could not extract sufficient text from this PDF using Mistral OCR. Please try uploading a text-based PDF or convert to plain text.';
     
   } catch (error) {
-    console.error('Mistral Vision PDF processing failed:', error);
-    return 'PDF processing with Mistral Vision failed. Please try uploading a text-based PDF or convert to plain text.';
+    console.error('Mistral OCR PDF processing failed:', error);
+    return 'PDF processing with Mistral OCR failed. Please try uploading a text-based PDF or convert to plain text.';
   }
 }
 
 async function extractTextFromImageWithMistral(filePath: string, mimeType: string): Promise<string> {
   try {
-    console.log('Processing image with Mistral Vision API...');
+    console.log('Processing image with Mistral OCR API...');
     
     const imageBuffer = await readFile(filePath);
     const base64Image = imageBuffer.toString('base64');
     
-    const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.MISTRAL_API_KEY}`,
-        'Content-Type': 'application/json'
+    const ocrResponse = await client.ocr.process({
+      model: "mistral-ocr-latest",
+      document: {
+        type: "image_url",
+        imageUrl: `data:${mimeType};base64,${base64Image}`
       },
-      body: JSON.stringify({
-        model: "pixtral-12b-2409",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Please extract all the text from this image. Focus on educational content, headings, paragraphs, and any readable text. Preserve the structure and formatting as much as possible. Return only the extracted text without any commentary."
-              },
-              {
-                type: "image_url",
-                image_url: `data:${mimeType};base64,${base64Image}`
-              }
-            ]
-          }
-        ],
-        max_tokens: 2000,
-        temperature: 0
-      })
+      includeImageBase64: false
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Mistral Vision API error: ${response.status} - ${errorText}`);
+    
+    let extractedText = '';
+    
+    if (ocrResponse.pages && ocrResponse.pages.length > 0) {
+      for (const page of ocrResponse.pages) {
+        if ((page as any).blocks && (page as any).blocks.length > 0) {
+          for (const block of (page as any).blocks) {
+            if (block.text) {
+              extractedText += block.text + ' ';
+            }
+          }
+          extractedText += '\n\n';
+        } else if ((page as any).text) {
+          extractedText += (page as any).text + '\n\n';
+        }
+      }
     }
 
-    const result = await response.json();
-    const extractedText = result.choices?.[0]?.message?.content || '';
-
     if (extractedText.trim().length > 10) {
-      console.log('Successfully extracted text via Mistral Vision:', extractedText.length, 'characters');
+      console.log('Successfully extracted text via Mistral OCR:', extractedText.length, 'characters');
       return extractedText.trim();
     }
     
-    return 'Could not extract text from this image using Mistral Vision. Please ensure the image contains clear, readable text.';
+    return 'Could not extract text from this image using Mistral OCR. Please ensure the image contains clear, readable text.';
     
   } catch (error) {
-    console.error('Mistral Vision image processing failed:', error);
-    return 'Image processing with Mistral Vision failed. Please try uploading a clearer image or convert to text format.';
+    console.error('Mistral OCR image processing failed:', error);
+    return 'Image processing with Mistral OCR failed. Please try uploading a clearer image or convert to text format.';
   }
 }
