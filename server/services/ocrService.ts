@@ -5,22 +5,36 @@ export async function extractTextWithOCR(filePath: string): Promise<string> {
   try {
     console.log('Starting OCR text extraction...');
     
-    // For PDF files, we'll use PDF.js to render pages to canvas, then OCR
+    // For PDF files, skip Tesseract and use pdf-parse only
     if (filePath.toLowerCase().endsWith('.pdf')) {
       return await extractTextFromPDFWithOCR(filePath);
     }
     
-    // For image files, directly use Tesseract
-    const buffer = await readFile(filePath);
-    const { data: { text } } = await Tesseract.recognize(buffer, 'eng', {
-      logger: m => {
-        if (m.status === 'recognizing text') {
-          console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+    // For image files, use Tesseract with better error handling
+    try {
+      const buffer = await readFile(filePath);
+      
+      // Add timeout and better error handling for Tesseract
+      const timeoutPromise = new Promise<string>((_, reject) => {
+        setTimeout(() => reject(new Error('OCR timeout after 30 seconds')), 30000);
+      });
+      
+      const ocrPromise = Tesseract.recognize(buffer, 'eng', {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+          }
         }
-      }
-    });
-    
-    return text || '';
+      }).then(result => result.data.text || '');
+      
+      const text = await Promise.race([ocrPromise, timeoutPromise]);
+      return text;
+      
+    } catch (tesseractError) {
+      console.error('Tesseract OCR failed:', tesseractError);
+      // Return helpful message instead of crashing
+      return 'This image file could not be processed with OCR. Please try uploading a clearer image or convert your content to a text file.';
+    }
     
   } catch (error) {
     console.error('OCR extraction failed:', error);
@@ -33,8 +47,8 @@ async function extractTextFromPDFWithOCR(filePath: string): Promise<string> {
   try {
     console.log('Starting PDF OCR with simplified approach...');
     
-    // For now, let's use a simpler approach since PDF.js canvas rendering is complex
-    // We'll try to extract any available text and provide a helpful message
+    // Skip direct Tesseract PDF processing as it's not supported
+    // Instead, focus on embedded text extraction
     const buffer = await readFile(filePath);
     
     // Check if PDF has any embedded text we can extract

@@ -44,16 +44,25 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
     console.log('Direct PDF text extraction failed, will try OCR fallback');
   }
   
-  // Step 2: OCR fallback - wrapped in try-catch to prevent crashes
+  // Step 2: OCR fallback - completely isolated to prevent crashes
   try {
     console.log('Attempting OCR text extraction...');
-    const ocrText = await extractTextWithOCR(filePath);
     
-    if (ocrText && ocrText.trim().length > 50) {
+    // Set a timeout to prevent hanging
+    const ocrPromise = extractTextWithOCR(filePath);
+    const timeoutPromise = new Promise<string>((resolve) => {
+      setTimeout(() => resolve('OCR timeout - unable to process'), 60000);
+    });
+    
+    const ocrText = await Promise.race([ocrPromise, timeoutPromise]);
+    
+    if (ocrText && ocrText.trim().length > 50 && 
+        !ocrText.includes('could not be processed') && 
+        !ocrText.includes('OCR timeout')) {
       console.log('OCR text extraction successful:', ocrText.length, 'characters');
       return ocrText;
     } else {
-      console.log('OCR extracted minimal text:', ocrText?.length || 0, 'characters');
+      console.log('OCR extracted minimal text or returned error message:', ocrText?.length || 0, 'characters');
     }
     
   } catch (ocrError) {
