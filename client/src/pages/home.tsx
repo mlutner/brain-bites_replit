@@ -15,6 +15,7 @@ import { Link } from "wouter";
 import { FileText, Clock, Download, MoreHorizontal, Trash2, BookOpen, HelpCircle, Upload } from "lucide-react";
 import brainBitesLogo from "@assets/image_1750458128564.png";
 import flashcardIcon from "@assets/image_1750460125700.png";
+import quizIcon from "@assets/image_1750460618691.png";
 
 interface Generation {
   id: number;
@@ -453,7 +454,7 @@ export default function Home() {
                                 </>
                               ) : (
                                 <>
-                                  <HelpCircle className="w-4 h-4 mr-2" />
+                                  <img src={quizIcon} alt="Quiz" className="w-4 h-4 mr-2" />
                                   Quiz
                                 </>
                               )}

@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Brain, FileText } from "lucide-react";
 import flashcardIcon from "@assets/image_1750460299962.png";
+import quizIcon from "@assets/image_1750460618691.png";
 
 interface GenerationOptionsProps {
   selectedFormat: 'flashcards' | 'quiz' | null;
@@ -59,8 +60,8 @@ export default function GenerationOptions({
         >
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                <img src={quizIcon} alt="Quiz" className="w-12 h-12" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Multiple Choice Quiz</h3>
