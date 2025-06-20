@@ -34,7 +34,7 @@ export default function GenerationOptions({
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
-                <img src={flashcardIcon} alt="Flashcards" className="w-12 h-12" />
+                <img src={flashcardIcon} alt="Flashcards" className="w-16 h-16" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Flashcards</h3>
@@ -61,7 +61,7 @@ export default function GenerationOptions({
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
-                <img src={quizIcon} alt="Quiz" className="w-12 h-12" />
+                <img src={quizIcon} alt="Quiz" className="w-16 h-16" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Multiple Choice Quiz</h3>
