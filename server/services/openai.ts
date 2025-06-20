@@ -2,8 +2,12 @@ import OpenAI from "openai";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || ""
+  apiKey: process.env.OPENAI_API_KEY
 });
+
+if (!process.env.OPENAI_API_KEY) {
+  console.error("OpenAI API key is not configured");
+}
 
 interface FlashcardPair {
   question: string;
@@ -23,6 +27,13 @@ export async function generateFlashcards(
   text: string,
   difficulty: string = 'auto'
 ): Promise<FlashcardPair[]> {
+  console.log('Starting flashcard generation with difficulty:', difficulty);
+  console.log('Text length:', text.length);
+  
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OpenAI API key is not configured");
+  }
+
   const difficultyPrompt = difficulty === 'auto' 
     ? "Automatically determine appropriate difficulty levels based on content complexity."
     : `Generate cards at ${difficulty} difficulty level.`;
@@ -37,21 +48,24 @@ export async function generateFlashcards(
     - Include a mix of factual recall and conceptual understanding
     - Vary in difficulty from basic recall to deeper analysis
     
-    Return a JSON array with this exact format:
-    [
-      {
-        "question": "Clear, specific question",
-        "answer": "Comprehensive but concise answer",
-        "difficulty": "easy|medium|hard"
-      }
-    ]
+    Return a JSON object with this exact format:
+    {
+      "flashcards": [
+        {
+          "question": "Clear, specific question",
+          "answer": "Comprehensive but concise answer",
+          "difficulty": "easy|medium|hard"
+        }
+      ]
+    }
     
     Generate 15-25 flashcards from this text:
     
-    ${text}
+    ${text.substring(0, 8000)}
   `;
 
   try {
+    console.log('Making OpenAI API call for flashcards...');
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -68,19 +82,26 @@ export async function generateFlashcards(
       temperature: 0.7,
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "[]");
+    console.log('OpenAI API response received');
+    const result = JSON.parse(response.choices[0].message.content || '{"flashcards": []}');
+    console.log('Parsed response structure:', Object.keys(result));
     
     // Handle both array and object with array property
     const flashcards = Array.isArray(result) ? result : (result.flashcards || []);
+    console.log('Raw flashcards count:', flashcards.length);
     
-    return flashcards.map((card: any) => ({
+    const processedFlashcards = flashcards.map((card: any) => ({
       question: card.question || "",
       answer: card.answer || "",
       difficulty: card.difficulty || 'medium'
     }));
 
+    console.log('Processed flashcards count:', processedFlashcards.length);
+    return processedFlashcards;
+
   } catch (error) {
     console.error("Error generating flashcards:", error);
+    console.error("Error details:", error instanceof Error ? error.stack : 'No stack trace');
     throw new Error("Failed to generate flashcards: " + (error as Error).message);
   }
 }

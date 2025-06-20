@@ -109,10 +109,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/generate', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      console.log('Generate request from user:', userId, 'Body:', req.body);
       
       // Validate request body
       const validation = generateContentSchema.safeParse(req.body);
       if (!validation.success) {
+        console.error('Validation failed:', validation.error.errors);
         return res.status(400).json({ 
           message: 'Invalid request', 
           errors: validation.error.errors 
@@ -120,12 +122,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { fileId, type, difficulty, questionCount } = validation.data;
+      console.log('Processing generation:', { fileId, type, difficulty, questionCount });
 
       // Get file and verify ownership
       const file = await storage.getFile(fileId);
       if (!file || file.userId !== userId) {
+        console.error('File not found or access denied:', fileId, userId);
         return res.status(404).json({ message: 'File not found' });
       }
+
+      console.log('File found:', { 
+        id: file.id, 
+        name: file.originalName, 
+        hasText: !!file.extractedText,
+        textLength: file.extractedText?.length || 0
+      });
 
       if (!file.extractedText) {
         return res.status(400).json({ message: 'File text extraction is still in progress' });
@@ -134,21 +145,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Assess difficulty if auto
       let finalDifficulty = difficulty;
       if (difficulty === 'auto') {
+        console.log('Assessing difficulty automatically...');
         finalDifficulty = await assessDifficulty(file.extractedText);
+        console.log('Auto-assessed difficulty:', finalDifficulty);
       }
 
       let generatedContent: any;
       let title: string;
 
+      console.log('Starting content generation for type:', type);
+
       if (type === 'flashcards') {
+        console.log('Generating flashcards...');
         generatedContent = await generateFlashcards(file.extractedText, finalDifficulty);
         title = `Flashcards from ${file.originalName}`;
+        console.log('Generated flashcards count:', generatedContent?.length || 0);
       } else {
         const count = questionCount || 10;
+        console.log('Generating quiz with', count, 'questions...');
         generatedContent = await generateQuiz(file.extractedText, count, finalDifficulty);
         title = `Quiz from ${file.originalName}`;
+        console.log('Generated quiz questions count:', generatedContent?.length || 0);
       }
 
+      if (!generatedContent || generatedContent.length === 0) {
+        console.error('No content generated');
+        return res.status(500).json({ 
+          message: 'Failed to generate content - no items created'
+        });
+      }
+
+      console.log('Saving generation to database...');
       // Save generation
       const generation = await storage.createGeneration({
         userId,
@@ -159,6 +186,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         difficulty: finalDifficulty,
         questionCount: type === 'quiz' ? (questionCount || 10) : null,
       });
+
+      console.log('Generation saved with ID:', generation.id);
 
       res.json({
         id: generation.id,
@@ -172,6 +201,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error) {
       console.error('Content generation error:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       res.status(500).json({ 
         message: 'Content generation failed', 
         error: error instanceof Error ? error.message : 'Unknown error'

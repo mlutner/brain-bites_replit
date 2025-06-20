@@ -45,7 +45,7 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
   
   // Step 2: OCR fallback using Tesseract.js
   try {
-    const { pdf2pic } = await import('pdf2pic');
+    const pdf2pic = (await import('pdf2pic')).default;
     const Tesseract = (await import('tesseract.js')).default;
     
     // Convert PDF to images
