@@ -124,8 +124,8 @@ export default function FileUpload({ onFilesUpload }: FileUploadProps) {
   return (
     <div>
       <Card 
-        className={`border-2 border-dashed transition-all duration-300 upload-area ${
-          dragOver ? 'border-primary bg-primary/5 drag-over' : 'border-muted hover:border-primary'
+        className={`border-2 border-dashed transition-all duration-300 upload-area bg-gradient-to-br from-card to-muted/30 ${
+          dragOver ? 'border-primary bg-primary/10 shadow-lg scale-[1.02]' : 'border-foreground/20 hover:border-primary hover:shadow-md'
         }`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -133,15 +133,15 @@ export default function FileUpload({ onFilesUpload }: FileUploadProps) {
       >
         <CardContent className="p-8 text-center">
           <div className="max-w-md mx-auto">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <Upload className="w-8 h-8 text-muted-foreground" />
+            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-primary/30">
+              <Upload className="w-8 h-8 text-primary" />
             </div>
             
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              Upload your study materials
+            <h3 className="text-xl font-bold text-foreground mb-2">
+              Scan PDF or Text
             </h3>
-            <p className="text-muted-foreground mb-6">
-              Drag and drop your PDF or text files here, or click to browse.
+            <p className="text-foreground/70 mb-6 font-medium">
+              Processing typically takes 30-60 seconds
             </p>
             
             <input
@@ -155,11 +155,11 @@ export default function FileUpload({ onFilesUpload }: FileUploadProps) {
             <Button 
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="mb-4"
+              className="mb-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
             >
               {isUploading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   Uploading...
                 </>
               ) : (
@@ -170,7 +170,7 @@ export default function FileUpload({ onFilesUpload }: FileUploadProps) {
               )}
             </Button>
             
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-foreground/60 font-medium">
               Supports PDF and TXT files up to 10MB
             </p>
           </div>
