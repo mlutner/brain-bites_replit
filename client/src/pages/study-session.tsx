@@ -110,11 +110,20 @@ export default function StudySession() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Logo in top right corner */}
+      <div className="fixed top-4 right-4 z-50">
+        <img 
+          src={brainBitesLogo} 
+          alt="Brain Bites" 
+          className="h-10 w-auto"
+        />
+      </div>
+
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center h-16">
             <div className="flex items-center space-x-4">
               <Link href="/">
                 <Button variant="ghost" size="sm">
@@ -122,24 +131,15 @@ export default function StudySession() {
                   Back
                 </Button>
               </Link>
-            </div>
-            
-            <div className="text-center">
-              <h1 className="font-semibold text-foreground">{generation.title}</h1>
-              <p className="text-sm text-muted-foreground">
-                {generation.type === 'flashcards' 
-                  ? `${generation.content.length} flashcards`
-                  : `${generation.content.length} questions`
-                } • {generation.difficulty} difficulty
-              </p>
-            </div>
-            
-            <div className="flex items-center">
-              <img 
-                src={brainBitesLogo} 
-                alt="Brain Bites" 
-                className="h-10 w-auto"
-              />
+              <div className="text-left">
+                <h1 className="font-semibold text-foreground">{generation?.title}</h1>
+                <p className="text-sm text-muted-foreground">
+                  {generation?.type === 'flashcards' 
+                    ? `${generation?.content?.length} flashcards`
+                    : `${generation?.content?.length} questions`
+                  } • {generation?.difficulty} difficulty
+                </p>
+              </div>
             </div>
           </div>
         </div>
