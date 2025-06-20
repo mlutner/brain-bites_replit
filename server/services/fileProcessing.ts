@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import { extractTextWithOpenAI } from './openaiOcr';
+import { extractTextWithMistral } from './mistralOcr';
 
 const readFile = promisify(fs.readFile);
 
@@ -56,8 +56,8 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
         resolve('AI processing timeout - unable to process');
       }, 60000); // Longer timeout for AI processing
       
-      // Handle the OpenAI OCR process with full error isolation
-      extractTextWithOpenAI(filePath, 'application/pdf')
+      // Handle the Mistral OCR process with full error isolation
+      extractTextWithMistral(filePath, 'application/pdf')
         .then((text: string) => {
           clearTimeout(timeout);
           resolve(text || 'No text extracted via AI processing');
