@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import { extractTextWithOCR } from './ocrService';
+import { extractTextWithOpenAI } from './openaiOcr';
 
 const readFile = promisify(fs.readFile);
 
@@ -47,41 +47,41 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
   
   // Step 2: OCR fallback - completely isolated to prevent crashes
   try {
-    console.log('Attempting OCR text extraction...');
+    console.log('Attempting AI-powered text extraction...');
     
     // Wrap OCR in a more robust error boundary
     ocrText = await new Promise<string>((resolve) => {
       // Set a timeout to prevent hanging
       const timeout = setTimeout(() => {
-        resolve('OCR timeout - unable to process');
-      }, 30000); // Reduced timeout
+        resolve('AI processing timeout - unable to process');
+      }, 60000); // Longer timeout for AI processing
       
-      // Handle the OCR process with full error isolation
-      extractTextWithOCR(filePath)
-        .then((text) => {
+      // Handle the OpenAI OCR process with full error isolation
+      extractTextWithOpenAI(filePath, 'application/pdf')
+        .then((text: string) => {
           clearTimeout(timeout);
-          resolve(text || 'No text extracted via OCR');
+          resolve(text || 'No text extracted via AI processing');
         })
-        .catch((error) => {
+        .catch((error: any) => {
           clearTimeout(timeout);
-          console.error('OCR process failed safely:', error.message || error);
-          resolve('OCR processing failed - document may contain complex formatting');
+          console.error('AI text extraction process failed safely:', error.message || error);
+          resolve('AI text processing failed - document may contain complex formatting');
         });
     });
     
     if (ocrText && ocrText.trim().length > 50 && 
         !ocrText.includes('could not be processed') && 
-        !ocrText.includes('OCR timeout') &&
-        !ocrText.includes('OCR processing failed')) {
-      console.log('OCR text extraction successful:', ocrText.length, 'characters');
+        !ocrText.includes('processing timeout') &&
+        !ocrText.includes('processing failed')) {
+      console.log('AI text extraction successful:', ocrText.length, 'characters');
       return ocrText;
     } else {
-      console.log('OCR extracted minimal text or returned error message:', ocrText?.length || 0, 'characters');
+      console.log('AI extracted minimal text or returned error message:', ocrText?.length || 0, 'characters');
     }
     
-  } catch (ocrError) {
-    console.error('OCR fallback failed, continuing with direct text extraction:', ocrError);
-    // Don't let OCR errors crash the server - just log and continue
+  } catch (aiError) {
+    console.error('AI text extraction fallback failed, continuing with direct text extraction:', aiError);
+    // Don't let AI errors crash the server - just log and continue
   }
   
   // Step 3: Final fallback - return any text we found, even if minimal
