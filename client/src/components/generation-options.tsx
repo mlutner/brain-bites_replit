@@ -32,8 +32,8 @@ export default function GenerationOptions({
         >
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <img src={flashcardIcon} alt="Flashcards" className="w-8 h-8" />
+              <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                <img src={flashcardIcon} alt="Flashcards" className="w-12 h-12" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Flashcards</h3>
