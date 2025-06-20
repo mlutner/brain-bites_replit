@@ -35,6 +35,7 @@ interface UploadedFile {
 export default function Home() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
+  const queryClient = useQueryClient();
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
   const [selectedFormat, setSelectedFormat] = useState<'flashcards' | 'quiz' | null>(null);
   const [quizConfig, setQuizConfig] = useState({ questions: 10, difficulty: 'auto' });
@@ -62,12 +63,103 @@ export default function Home() {
     enabled: isAuthenticated,
   });
 
+  // Fetch uploaded files
+  const { data: userFiles = [] } = useQuery<UploadedFile[]>({
+    queryKey: ["/api/files"],
+    enabled: isAuthenticated,
+  });
+
+  // Delete file mutation
+  const deleteFileMutation = useMutation({
+    mutationFn: async (fileId: number) => {
+      const response = await fetch(`/api/files/${fileId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${await response.text()}`);
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      toast({
+        title: "File deleted",
+        description: "File has been successfully deleted.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Delete failed",
+        description: error instanceof Error ? error.message : "Failed to delete file",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Generate content mutation
+  const generateMutation = useMutation({
+    mutationFn: async (data: { fileId: number; type: 'flashcards' | 'quiz'; difficulty: string; questionCount?: number }) => {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${await response.text()}`);
+      }
+      return response.json();
+    },
+    onSuccess: (result) => {
+      setGeneratedContent(result);
+      queryClient.invalidateQueries({ queryKey: ["/api/generations"] });
+      toast({
+        title: "Success!",
+        description: `Generated ${result.type} successfully.`,
+      });
+    },
+    onError: (error) => {
+      if (error instanceof Error && isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      
+      toast({
+        title: "Generation Failed",
+        description: error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleLogout = () => {
     window.location.href = "/api/logout";
   };
 
   const handleFileUpload = (files: any[]) => {
     setUploadedFiles(files);
+    queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+  };
+
+  const handleGenerateContent = (fileId: number, type: 'flashcards' | 'quiz') => {
+    generateMutation.mutate({
+      fileId,
+      type,
+      difficulty: 'auto',
+      questionCount: type === 'quiz' ? 10 : undefined,
+    });
+  };
+
+  const handleDeleteFile = (fileId: number) => {
+    deleteFileMutation.mutate(fileId);
   };
 
   const handleGenerate = async () => {
@@ -172,7 +264,7 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
                 <span className="text-sm font-medium text-muted-foreground">
-                  {user?.firstName?.[0] || user?.email?.[0] || 'U'}
+                  {(user as any)?.firstName?.[0] || (user as any)?.email?.[0] || 'U'}
                 </span>
               </div>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -258,17 +350,93 @@ export default function Home() {
           </section>
         )}
 
+        {/* Uploaded Files */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-semibold text-foreground mb-6">Your Files</h2>
+          <div className="grid gap-4">
+            {userFiles.length === 0 ? (
+              <Card className="p-8 text-center">
+                <CardContent className="pt-6">
+                  <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No files uploaded yet</h3>
+                  <p className="text-muted-foreground">
+                    Upload your first document to generate study materials.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              userFiles.map((file) => (
+                <Card key={file.id} className="p-6 hover:shadow-sm transition-shadow">
+                  <CardContent className="p-0">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-foreground">{file.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {(file.size / 1024 / 1024).toFixed(2)} MB • {formatDate(file.uploadedAt)}
+                            {!file.hasText && <span className="text-orange-500"> • Processing...</span>}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          disabled={!file.hasText || generateMutation.isPending}
+                          onClick={() => handleGenerateContent(file.id, 'flashcards')}
+                        >
+                          <BookOpen className="w-4 h-4 mr-2" />
+                          Flashcards
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          disabled={!file.hasText || generateMutation.isPending}
+                          onClick={() => handleGenerateContent(file.id, 'quiz')}
+                        >
+                          <HelpCircle className="w-4 h-4 mr-2" />
+                          Quiz
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem 
+                              className="text-red-600"
+                              onClick={() => handleDeleteFile(file.id)}
+                              disabled={deleteFileMutation.isPending}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </section>
+
         {/* Recent Generations */}
         <section className="mt-16">
-          <h2 className="text-2xl font-semibold text-foreground mb-6">Recent Generations</h2>
+          <h2 className="text-2xl font-semibold text-foreground mb-6">Recent Study Materials</h2>
           <div className="grid gap-4">
             {recentGenerations.length === 0 ? (
               <Card className="p-8 text-center">
                 <CardContent className="pt-6">
                   <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-foreground mb-2">No generations yet</h3>
+                  <h3 className="text-lg font-medium text-foreground mb-2">No study materials yet</h3>
                   <p className="text-muted-foreground">
-                    Upload a file and generate your first study materials to get started.
+                    Generate flashcards or quizzes from your uploaded files to get started.
                   </p>
                 </CardContent>
               </Card>
@@ -280,9 +448,9 @@ export default function Home() {
                       <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
                           {generation.type === 'flashcards' ? (
-                            <FileText className="w-5 h-5 text-muted-foreground" />
+                            <BookOpen className="w-5 h-5 text-muted-foreground" />
                           ) : (
-                            <FileText className="w-5 h-5 text-muted-foreground" />
+                            <HelpCircle className="w-5 h-5 text-muted-foreground" />
                           )}
                         </div>
                         <div>
@@ -291,7 +459,7 @@ export default function Home() {
                             {generation.type === 'flashcards' 
                               ? 'Flashcards' 
                               : `${generation.questionCount} questions`
-                            } • {formatDate(generation.createdAt)}
+                            } • {generation.difficulty} • {formatDate(generation.createdAt)}
                           </p>
                         </div>
                       </div>
@@ -304,9 +472,6 @@ export default function Home() {
                         </Link>
                         <Button variant="ghost" size="sm">
                           <Download className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
