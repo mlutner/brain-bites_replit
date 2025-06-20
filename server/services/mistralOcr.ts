@@ -32,6 +32,10 @@ async function extractTextFromPDFWithMistral(filePath: string): Promise<string> 
     const pdfBuffer = await readFile(filePath);
     const base64Pdf = pdfBuffer.toString('base64');
     
+    console.log('Making Mistral OCR API call...');
+    console.log('API Key available:', !!process.env.MISTRAL_API_KEY);
+    console.log('PDF size:', base64Pdf.length, 'characters');
+    
     const ocrResponse = await client.ocr.process({
       model: "mistral-ocr-latest",
       document: {
@@ -40,6 +44,8 @@ async function extractTextFromPDFWithMistral(filePath: string): Promise<string> 
       },
       includeImageBase64: false
     });
+    
+    console.log('OCR Response received:', JSON.stringify(ocrResponse, null, 2));
     
     let extractedText = '';
     
@@ -67,6 +73,11 @@ async function extractTextFromPDFWithMistral(filePath: string): Promise<string> 
     
   } catch (error) {
     console.error('Mistral OCR PDF processing failed:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return 'PDF processing with Mistral OCR failed. Please try uploading a text-based PDF or convert to plain text.';
   }
 }
