@@ -13,6 +13,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
 import { FileText, Clock, Download, MoreHorizontal, Trash2, BookOpen, HelpCircle, Upload } from "lucide-react";
+import brainBitesLogo from "@assets/image_1750458128564.png";
 
 interface Generation {
   id: number;
@@ -249,13 +250,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="brain-logo">
-              <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center relative">
-                <span className="text-2xl">🧠</span>
-                <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">👓</span>
-                </div>
-              </div>
-              <span className="font-bold text-2xl text-primary">Brain Bites</span>
+              <img 
+                src={brainBitesLogo} 
+                alt="Brain Bites" 
+                className="h-10 w-auto"
+              />
             </div>
             
             <nav className="hidden md:flex space-x-8">
@@ -499,13 +498,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="brain-logo mb-4 md:mb-0">
-              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center relative">
-                <span className="text-xl">🧠</span>
-                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-primary flex items-center justify-center">
-                  <span className="text-white text-xs">👓</span>
-                </div>
-              </div>
-              <span className="font-bold text-lg text-primary">Brain Bites</span>
+              <img 
+                src={brainBitesLogo} 
+                alt="Brain Bites" 
+                className="h-8 w-auto"
+              />
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-primary transition-colors">Features</a>
