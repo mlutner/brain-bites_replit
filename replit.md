@@ -116,6 +116,9 @@ Changelog:
   - Successfully deployed and tested all core functionality
   - Debugged and confirmed quiz/flashcard generation working with OpenAI API
   - Improved PDF text extraction error handling and logging
+  - Fixed server crashes caused by PDF processing errors with global error handlers
+  - Enhanced OCR service with improved error isolation and pdf2pic integration
+  - Application now handles problematic PDF files gracefully without crashing
 
 ## User Preferences
 
