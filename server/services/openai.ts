@@ -111,6 +111,14 @@ export async function generateQuiz(
   questionCount: number = 10,
   difficulty: string = 'auto'
 ): Promise<QuizQuestion[]> {
+  console.log('Starting quiz generation with difficulty:', difficulty);
+  console.log('Text length:', text.length);
+  console.log('Question count requested:', questionCount);
+  
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OpenAI API key is not configured");
+  }
+
   const difficultyPrompt = difficulty === 'auto' 
     ? "Automatically determine appropriate difficulty levels based on content complexity."
     : `Generate questions at ${difficulty} difficulty level.`;
@@ -126,23 +134,26 @@ export async function generateQuiz(
     - Include smart distractors (wrong answers that seem reasonable)
     - Provide explanations for the correct answers
     
-    Return a JSON array with this exact format:
-    [
-      {
-        "question": "Clear, specific question",
-        "options": ["Option A", "Option B", "Option C", "Option D"],
-        "correctAnswer": 0,
-        "explanation": "Why this answer is correct",
-        "difficulty": "easy|medium|hard"
-      }
-    ]
+    Return a JSON object with this exact format:
+    {
+      "questions": [
+        {
+          "question": "Clear, specific question",
+          "options": ["Option A", "Option B", "Option C", "Option D"],
+          "correctAnswer": 0,
+          "explanation": "Why this answer is correct",
+          "difficulty": "easy|medium|hard"
+        }
+      ]
+    }
     
     Generate questions from this text:
     
-    ${text}
+    ${text.substring(0, 8000)}
   `;
 
   try {
+    console.log('Making OpenAI API call for quiz...');
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -159,12 +170,15 @@ export async function generateQuiz(
       temperature: 0.7,
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "[]");
+    console.log('OpenAI API response received for quiz');
+    const result = JSON.parse(response.choices[0].message.content || '{"questions": []}');
+    console.log('Parsed quiz response structure:', Object.keys(result));
     
     // Handle both array and object with array property
     const questions = Array.isArray(result) ? result : (result.questions || []);
+    console.log('Raw questions count:', questions.length);
     
-    return questions.slice(0, questionCount).map((q: any) => ({
+    const processedQuestions = questions.slice(0, questionCount).map((q: any) => ({
       question: q.question || "",
       options: Array.isArray(q.options) ? q.options : [],
       correctAnswer: typeof q.correctAnswer === 'number' ? q.correctAnswer : 0,
@@ -172,8 +186,12 @@ export async function generateQuiz(
       difficulty: q.difficulty || 'medium'
     }));
 
+    console.log('Processed questions count:', processedQuestions.length);
+    return processedQuestions;
+
   } catch (error) {
     console.error("Error generating quiz:", error);
+    console.error("Error details:", error instanceof Error ? error.stack : 'No stack trace');
     throw new Error("Failed to generate quiz: " + (error as Error).message);
   }
 }

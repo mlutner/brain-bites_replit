@@ -137,9 +137,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         hasText: !!file.extractedText,
         textLength: file.extractedText?.length || 0
       });
+      
+      // Log first 500 characters of extracted text for debugging
+      if (file.extractedText) {
+        console.log('Extracted text preview:', file.extractedText.substring(0, 500));
+      }
 
       if (!file.extractedText) {
         return res.status(400).json({ message: 'File text extraction is still in progress' });
+      }
+
+      // Check if content is sufficient for generation
+      if (file.extractedText.trim().length < 50) {
+        console.error('Text content too short for meaningful generation:', file.extractedText.length, 'characters');
+        return res.status(400).json({ 
+          message: 'Text content is too short to generate meaningful study materials. Please upload a document with more content.' 
+        });
       }
 
       // Assess difficulty if auto
