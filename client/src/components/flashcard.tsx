@@ -33,6 +33,19 @@ export default function Flashcard({ cards }: FlashcardProps) {
   const currentCard = cards[currentIndex];
   const progress = ((currentIndex + 1) / cards.length) * 100;
 
+  // Safety check for card data
+  if (!currentCard) {
+    return (
+      <div className="max-w-2xl mx-auto text-center">
+        <Card className="p-8">
+          <CardContent className="pt-6">
+            <p className="text-muted-foreground">Card data is not available.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const handleNext = () => {
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -87,8 +100,8 @@ export default function Flashcard({ cards }: FlashcardProps) {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge className={getDifficultyColor(currentCard.difficulty)}>
-              {currentCard.difficulty}
+            <Badge className={getDifficultyColor(currentCard.difficulty || 'medium')}>
+              {currentCard.difficulty || 'medium'}
             </Badge>
             {completedCards.has(currentIndex) && (
               <CheckCircle className="w-5 h-5 text-green-500" />

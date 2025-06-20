@@ -53,11 +53,12 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
       console.log('OCR text extraction successful:', ocrText.length, 'characters');
       return ocrText;
     } else {
-      console.log('OCR extracted minimal text:', ocrText.length, 'characters');
+      console.log('OCR extracted minimal text:', ocrText?.length || 0, 'characters');
     }
     
   } catch (ocrError) {
-    console.log('OCR fallback failed:', ocrError);
+    console.error('OCR fallback failed, continuing with fallback:', ocrError);
+    // Don't let OCR errors crash the server
   }
   
   // Step 3: Final fallback
