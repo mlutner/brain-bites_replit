@@ -1,8 +1,8 @@
-# FlashGen - AI-Powered Study Material Generator
+# Brain Bites - AI-Powered Study Material Generator
 
 ## Overview
 
-FlashGen is a full-stack web application that transforms uploaded documents into interactive study materials using AI. Users can upload PDF or text files and generate flashcards or quizzes automatically. The application provides an intuitive interface for studying with interactive flashcard sessions and quiz functionality.
+Brain Bites is a full-stack web application that transforms uploaded documents into interactive study materials using AI. Users can upload PDF or text files and generate flashcards or quizzes automatically. The application features a playful yet professional design with a green and pink color scheme, centered around a friendly brain character with glasses. The interface provides intuitive file management with direct action buttons for generating flashcards, quizzes, and deleting files.
 
 ## System Architecture
 
@@ -125,6 +125,13 @@ Changelog:
   - Significantly improved text extraction accuracy and reliability for scanned documents
   - Fixed text extraction response parsing to handle Mistral OCR's markdown format output
   - Text extraction now properly extracts 6,000+ characters instead of partial 130 character responses
+  - Complete rebranding to "Brain Bites" with green/pink color scheme and friendly brain mascot
+  - Updated UI with Brain Bites branding, improved color palette, and custom styling
+  - Enhanced file management interface with dedicated action buttons for flashcards and quizzes
+  - Replaced generic "Study" button with specific "Generate Flashcards" and "Generate Quiz" options
+  - Added file deletion functionality with dropdown menu and confirmation
+  - Implemented separate sections for "Your Files" and "Recent Study Materials"
+  - Applied Brain Bites design language throughout the application with gradient buttons and themed cards
 
 ## User Preferences
 

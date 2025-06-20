@@ -498,16 +498,19 @@ export default function Home() {
       <footer className="border-t border-border bg-card mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xs">F</span>
+            <div className="brain-logo mb-4 md:mb-0">
+              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center relative">
+                <span className="text-xl">🧠</span>
+                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-primary flex items-center justify-center">
+                  <span className="text-white text-xs">👓</span>
+                </div>
               </div>
-              <span className="font-semibold text-foreground">FlashGen</span>
+              <span className="font-bold text-lg text-primary">Brain Bites</span>
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="hover:text-foreground transition-colors">Support</a>
+              <a href="#" className="hover:text-primary transition-colors">Features</a>
+              <a href="#" className="hover:text-primary transition-colors">Pricing</a>
+              <a href="#" className="hover:text-primary transition-colors">About</a>
             </div>
           </div>
         </div>
