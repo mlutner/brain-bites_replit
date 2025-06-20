@@ -308,18 +308,22 @@ export default function Home() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
-        <section className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-foreground mb-6">
-            Instantly generate
-            <br />
-            <span className="text-primary">flashcards and quizzes</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Study smarter by turning your notes or textbook pages into interactive flashcards and quizzes in seconds.
-          </p>
-          <p className="text-lg text-muted-foreground">
-            Great for students, teachers, and lifelong learners.
-          </p>
+        <section className="text-center mb-16">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-6xl font-bold text-foreground mb-8 leading-tight">
+              Instantly generate
+              <br />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                flashcards and quizzes
+              </span>
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-6 leading-relaxed">
+              Study smarter by turning your notes or textbook pages into interactive flashcards and quizzes in seconds.
+            </p>
+            <p className="text-lg text-muted-foreground/80 font-medium">
+              Great for students, teachers, and lifelong learners.
+            </p>
+          </div>
         </section>
 
         {/* File Upload Section */}
@@ -338,26 +342,29 @@ export default function Home() {
         </section>
 
         {/* Generate Button */}
-        <section className="text-center mb-12">
-          <div className="inline-block p-1 bg-gradient-to-r from-primary to-secondary rounded-xl">
+        <section className="text-center mb-16">
+          <div className="inline-block p-1.5 bg-gradient-to-r from-primary via-primary to-secondary rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
             <Button 
               onClick={handleGenerate}
               disabled={isGenerating || uploadedFiles.length === 0 || !selectedFormat}
               size="lg"
-              className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg font-semibold shadow-lg rounded-xl"
+              className="bg-white hover:bg-gray-50 text-primary px-10 py-6 text-xl font-bold shadow-none rounded-xl border-0 hover:scale-105 transition-all duration-300"
             >
               {isGenerating ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin mr-3"></div>
                   Generating...
                 </>
               ) : (
-                "Scan PDF or Text"
+                <>
+                  <div className="w-5 h-5 bg-gradient-to-r from-primary to-secondary rounded-full mr-3 animate-pulse-soft"></div>
+                  Scan PDF or Text
+                </>
               )}
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Processing typically takes 30-60 seconds
+          <p className="text-muted-foreground mt-4 font-medium">
+            ✨ Processing typically takes 30-60 seconds
           </p>
         </section>
 
@@ -388,35 +395,37 @@ export default function Home() {
         )}
 
         {/* Uploaded Files */}
-        <section className="mt-16">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Upload className="w-5 h-5 text-blue-600" />
+        <section className="mt-20">
+          <div className="flex items-center space-x-4 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Upload className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-semibold text-foreground">Your Documents</h2>
-              <p className="text-sm text-muted-foreground">Uploaded files ready for processing</p>
+              <h2 className="text-3xl font-bold text-foreground">Your Documents</h2>
+              <p className="text-muted-foreground">Uploaded files ready for processing</p>
             </div>
           </div>
-          <div className="grid gap-4 p-4 bg-blue-50/30 rounded-xl border border-blue-100">
+          <div className="grid gap-6 p-6 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-2xl border border-blue-200/50 shadow-sm">
             {userFiles.length === 0 ? (
-              <Card className="p-8 text-center">
+              <Card className="p-12 text-center bg-gradient-to-br from-blue-50/50 to-indigo-50/30 border-dashed border-2 border-blue-200">
                 <CardContent className="pt-6">
-                  <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-foreground mb-2">No files uploaded yet</h3>
-                  <p className="text-muted-foreground">
-                    Upload your first document to generate study materials.
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6 animate-float">
+                    <Upload className="w-10 h-10 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-3">No files uploaded yet</h3>
+                  <p className="text-muted-foreground text-lg">
+                    Upload your first document to generate study materials and start learning smarter! 📚
                   </p>
                 </CardContent>
               </Card>
             ) : (
               userFiles.map((file) => (
-                <Card key={file.id} className="p-6 hover:shadow-sm transition-shadow bg-white border-blue-200">
+                <Card key={file.id} className="p-6 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 bg-white border-blue-200/50 rounded-xl hover:border-blue-300">
                   <CardContent className="p-0">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <FileText className="w-6 h-6 text-blue-600" />
+                        <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center shadow-sm">
+                          <FileText className="w-7 h-7 text-blue-600" />
                         </div>
                         <div>
                           <h3 className="font-medium text-foreground">{file.name}</h3>
@@ -434,7 +443,7 @@ export default function Home() {
                               size="sm"
                               disabled={generateMutation.isPending}
                               onClick={() => handleGenerateContent(file.id, 'flashcards')}
-                              className="bg-primary/10 border-primary/30 text-primary hover:bg-primary hover:text-white"
+                              className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/30 text-primary hover:bg-gradient-to-r hover:from-primary hover:to-primary/90 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
                             >
                               {generateMutation.isPending && isGenerating ? (
                                 <>
@@ -453,7 +462,7 @@ export default function Home() {
                               size="sm"
                               disabled={generateMutation.isPending}
                               onClick={() => handleGenerateContent(file.id, 'quiz')}
-                              className="bg-secondary/10 border-secondary/30 text-secondary hover:bg-secondary hover:text-white"
+                              className="bg-gradient-to-r from-secondary/10 to-secondary/5 border-secondary/30 text-secondary hover:bg-gradient-to-r hover:from-secondary hover:to-secondary/90 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
                             >
                               {generateMutation.isPending && isGenerating ? (
                                 <>
@@ -501,17 +510,17 @@ export default function Home() {
         </section>
 
         {/* Recent Generations */}
-        <section className="mt-16">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
-              <img src={flashcardIcon} alt="Study Materials" className="w-5 h-5" />
+        <section className="mt-20">
+          <div className="flex items-center space-x-4 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary via-primary to-secondary rounded-xl flex items-center justify-center shadow-lg">
+              <img src={flashcardIcon} alt="Study Materials" className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-2xl font-semibold text-foreground">Study Materials</h2>
-              <p className="text-sm text-muted-foreground">Generated flashcards and quizzes ready to study</p>
+              <h2 className="text-3xl font-bold text-foreground">Study Materials</h2>
+              <p className="text-muted-foreground">Generated flashcards and quizzes ready to study</p>
             </div>
           </div>
-          <div className="grid gap-4 p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl border border-primary/20">
+          <div className="grid gap-6 p-6 bg-gradient-to-br from-primary/5 via-primary/3 to-secondary/5 rounded-2xl border border-primary/20 shadow-sm">
             {recentGenerations.length === 0 ? (
               <Card className="p-8 text-center">
                 <CardContent className="pt-6">
