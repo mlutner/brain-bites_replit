@@ -23,6 +23,7 @@ export interface IStorage {
   getFile(id: number): Promise<UploadedFile | undefined>;
   getUserFiles(userId: string): Promise<UploadedFile[]>;
   updateFileText(id: number, extractedText: string): Promise<void>;
+  deleteFile(id: number): Promise<void>;
   
   // Generation operations
   createGeneration(generation: InsertGeneration): Promise<Generation>;
@@ -95,6 +96,10 @@ export class DatabaseStorage implements IStorage {
       .from(generations)
       .where(eq(generations.userId, userId))
       .orderBy(desc(generations.createdAt));
+  }
+
+  async deleteFile(id: number): Promise<void> {
+    await db.delete(uploadedFiles).where(eq(uploadedFiles.id, id));
   }
 }
 

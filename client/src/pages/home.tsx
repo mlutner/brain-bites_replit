@@ -5,12 +5,14 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import FileUpload from "@/components/file-upload";
 import GenerationOptions from "@/components/generation-options";
 import ResultsDisplay from "@/components/results-display";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
-import { FileText, Clock, Download, MoreHorizontal } from "lucide-react";
+import { FileText, Clock, Download, MoreHorizontal, Trash2, BookOpen, HelpCircle, Upload } from "lucide-react";
 
 interface Generation {
   id: number;
@@ -19,6 +21,15 @@ interface Generation {
   difficulty: string;
   questionCount?: number;
   createdAt: string;
+}
+
+interface UploadedFile {
+  id: number;
+  name: string;
+  size: number;
+  type: string;
+  uploadedAt: string;
+  hasText: boolean;
 }
 
 export default function Home() {

@@ -275,6 +275,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete file endpoint
+  app.delete('/api/files/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const fileId = parseInt(req.params.id);
+      
+      const file = await storage.getFile(fileId);
+      if (!file || file.userId !== userId) {
+        return res.status(404).json({ message: 'File not found' });
+      }
+
+      // Delete physical file
+      const filePath = path.join(uploadDir, file.filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+
+      // Delete from database (this should cascade delete related generations)
+      await storage.deleteFile(fileId);
+      
+      res.json({ message: 'File deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      res.status(500).json({ message: 'Failed to delete file' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

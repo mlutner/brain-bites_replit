@@ -119,9 +119,12 @@ Changelog:
   - Fixed server crashes caused by PDF processing errors with global error handlers
   - Enhanced OCR service with improved error isolation and pdf2pic integration
   - Application now handles problematic PDF files gracefully without crashing
-  - Replaced unreliable Tesseract OCR with OpenAI Vision API for superior text extraction
-  - Implemented AI-powered PDF and image text extraction using GPT-4o Vision
+  - Replaced unreliable Tesseract OCR with Mistral OCR API for superior text extraction
+  - Implemented AI-powered PDF and image text extraction using Mistral OCR latest model
+  - Successfully integrated Mistral OCR API with proper markdown response parsing
   - Significantly improved text extraction accuracy and reliability for scanned documents
+  - Fixed text extraction response parsing to handle Mistral OCR's markdown format output
+  - Text extraction now properly extracts 6,000+ characters instead of partial 130 character responses
 
 ## User Preferences
 
