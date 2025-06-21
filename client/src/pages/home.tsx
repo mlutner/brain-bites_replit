@@ -289,7 +289,7 @@ export default function Home() {
             <nav className="hidden md:flex space-x-8">
               <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
               <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">My Library</Link>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Settings</a>
+              <Link href="/settings" className="text-muted-foreground hover:text-foreground transition-colors">Settings</Link>
             </nav>
 
             <div className="flex items-center space-x-4">

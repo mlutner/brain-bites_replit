@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Landing from "@/pages/landing";
 import StudySession from "@/pages/study-session";
 import Dashboard from "@/pages/dashboard";
+import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -35,6 +36,7 @@ function Router() {
         <>
           <Route path="/" component={Home} />
           <Route path="/dashboard" component={Dashboard} />
+          <Route path="/settings" component={Settings} />
           <Route path="/study/:id" component={StudySession} />
         </>
       )}

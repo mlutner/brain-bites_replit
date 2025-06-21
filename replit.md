@@ -132,6 +132,9 @@ Changelog:
   - Added file deletion functionality with dropdown menu and confirmation
   - Implemented separate sections for "Your Files" and "Recent Study Materials"
   - Applied Brain Bites design language throughout the application with gradient buttons and themed cards
+- Added comprehensive Settings page with user preferences, study configurations, and account management
+- Implemented functional navigation between Dashboard, Settings, and Home pages
+- Created settings categories: Profile, Study Preferences, AI Personality, Notifications, Interface, Data & Privacy, and Help & Support
 
 ## User Preferences
 

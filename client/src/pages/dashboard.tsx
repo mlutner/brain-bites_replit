@@ -90,12 +90,20 @@ export default function Dashboard() {
               </Link>
               <div>
                 <h1 className="text-xl font-semibold text-foreground">
-                  Welcome back, {user?.firstName || 'Student'}!
+                  Welcome back, {(user as any)?.firstName || 'Student'}!
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   Here's your learning progress overview
                 </p>
               </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <Link href="/settings">
+                <Button variant="ghost" size="sm">
+                  Settings
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
