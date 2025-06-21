@@ -89,32 +89,31 @@ export default function Landing() {
 
         {/* CTA Section */}
         <div className="text-center">
-          <Card className="p-8 bg-gradient-to-r from-primary/5 to-purple-600/5 border-primary/20">
-            <CardContent>
-              <h2 className="text-2xl font-bold text-foreground mb-4">
+          <BrainCard variant="gradient" padding="lg" className="brain-gradient-light">
+            <BrainCardContent>
+              <h2 className="brain-heading-2 mb-4">
                 Ready to Transform Your Study Experience?
               </h2>
-              <p className="text-muted-foreground mb-6">
+              <p className="brain-text-muted mb-6">
                 Join thousands of students who are already studying smarter, not harder.
               </p>
-              <Button onClick={handleLogin} size="lg" className="text-lg px-8 py-4">
+              <BrainButton onClick={handleLogin} size="lg" icon={ArrowRight} iconPosition="right">
                 Start Creating Now
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </CardContent>
-          </Card>
+              </BrainButton>
+            </BrainCardContent>
+          </BrainCard>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-border bg-card mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="brain-container py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xs">F</span>
+            <div className="brain-logo mb-4 md:mb-0">
+              <div className="w-8 h-8 brain-gradient rounded-lg flex items-center justify-center">
+                <Brain className="w-5 h-5 text-white" />
               </div>
-              <span className="font-semibold text-foreground">FlashGen</span>
+              <span className="font-semibold text-foreground">Brain Bites</span>
             </div>
             <div className="flex space-x-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
