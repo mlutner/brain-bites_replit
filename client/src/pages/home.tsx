@@ -9,8 +9,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import FileUpload from "@/components/file-upload";
 import GenerationOptions from "@/components/generation-options";
 import ResultsDisplay from "@/components/results-display";
+import { LoadingOverlay } from "@/components/common/loading-overlay";
+import { Navigation } from "@/components/common/navigation";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { formatDate } from "@/lib/formatters";
 import { Link } from "wouter";
 import { FileText, Clock, Download, MoreHorizontal, Trash2, BookOpen, HelpCircle, Upload } from "lucide-react";
 import brainBitesLogo from "@assets/image_1750458128564.png";
@@ -228,16 +231,7 @@ export default function Home() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours} hours ago`;
-    if (diffInHours < 48) return "Yesterday";
-    return date.toLocaleDateString();
-  };
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -252,27 +246,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Loading Overlay */}
-      {generateMutation.isPending && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-          <Card className="w-full max-w-md mx-4">
-            <CardContent className="pt-6 text-center">
-              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">
-                Generating Study Materials
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Our AI is creating personalized flashcards and quizzes from your document. This usually takes 10-30 seconds.
-              </p>
-              <div className="flex items-center justify-center space-x-2 text-primary">
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      <LoadingOverlay isVisible={generateMutation.isPending} />
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -286,45 +260,7 @@ export default function Home() {
               />
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
-              <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">My Library</Link>
-              <Link href="/settings" className="text-muted-foreground hover:text-foreground transition-colors">Settings</Link>
-            </nav>
-
-            <div className="flex items-center space-x-4">
-              {/* Mobile Navigation Dropdown */}
-              <div className="md:hidden">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard">Dashboard</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/">My Library</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings">Settings</Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              
-              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-muted-foreground">
-                  {(user as any)?.firstName?.[0] || (user as any)?.email?.[0] || 'U'}
-                </span>
-              </div>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                Sign out
-              </Button>
-            </div>
+            <Navigation user={user} onLogout={handleLogout} />
           </div>
         </div>
       </header>

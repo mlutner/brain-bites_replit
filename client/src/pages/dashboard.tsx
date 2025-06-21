@@ -5,6 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { PageHeader } from "@/components/common/page-header";
+import { StatCard } from "@/components/common/stat-card";
+import { formatDate, formatPercentage } from "@/lib/formatters";
 import { Link } from "wouter";
 import { 
   Brain, 
@@ -16,7 +19,6 @@ import {
   BookOpen,
   Target
 } from "lucide-react";
-import brainBitesLogo from "@assets/image_1750458395951.png";
 
 interface DashboardStats {
   totalGenerations: number;
@@ -73,41 +75,22 @@ export default function Dashboard() {
     );
   }
 
-  const totalStudyMaterials = stats?.flashcardsCount + stats?.quizzesCount || 0;
-  const difficultyTotal = stats?.difficultyStats.easy + stats?.difficultyStats.medium + stats?.difficultyStats.hard || 1;
+  const totalStudyMaterials = (stats?.flashcardsCount || 0) + (stats?.quizzesCount || 0);
+  const difficultyTotal = (stats?.difficultyStats.easy || 0) + (stats?.difficultyStats.medium || 0) + (stats?.difficultyStats.hard || 0) || 1;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  ← Back to Study
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-xl font-semibold text-foreground">
-                  Welcome back, {(user as any)?.firstName || 'Student'}!
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Here's your learning progress overview
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Link href="/settings">
-                <Button variant="ghost" size="sm">
-                  Settings
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title={`Welcome back, ${(user as any)?.firstName || 'Student'}!`}
+        description="Here's your learning progress overview"
+        backUrl="/"
+      >
+        <Link href="/settings">
+          <Button variant="ghost" size="sm">
+            Settings
+          </Button>
+        </Link>
+      </PageHeader>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Quick Stats Grid */}
