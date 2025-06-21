@@ -256,7 +256,7 @@ export default function Home() {
                 src={brainBitesLogo} 
                 alt="Brain Bites" 
                 className="h-auto w-auto"
-                style={{ height: '100px' }}
+                style={{ height: '115px' }}
               />
             </div>
 
