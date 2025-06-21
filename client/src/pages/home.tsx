@@ -286,6 +286,7 @@ export default function Home() {
               />
             </div>
 
+            {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8">
               <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">Dashboard</Link>
               <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">My Library</Link>
@@ -293,6 +294,28 @@ export default function Home() {
             </nav>
 
             <div className="flex items-center space-x-4">
+              {/* Mobile Navigation Dropdown */}
+              <div className="md:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard">Dashboard</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/">My Library</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings">Settings</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              
               <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
                 <span className="text-sm font-medium text-muted-foreground">
                   {(user as any)?.firstName?.[0] || (user as any)?.email?.[0] || 'U'}
