@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { BrainCard, BrainCardContent } from "@/components/ui/brain-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Brain, FileText } from "lucide-react";
 import flashcardIcon from "@assets/image_1750460299962.png";
@@ -19,19 +19,17 @@ export default function GenerationOptions({
 }: GenerationOptionsProps) {
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">
+      <h2 className="brain-heading-2 mb-6 text-center">
         Choose Your Study Format
       </h2>
       
-      <div className="grid md:grid-cols-2 gap-6 mb-6">
+      <div className="brain-grid grid-cols-1 md:grid-cols-2 mb-6">
         {/* Flashcards Option */}
-        <Card 
-          className={`generation-card ${
-            selectedFormat === 'flashcards' ? 'selected border-primary shadow-lg' : 'border-border hover:border-primary'
-          }`}
+        <BrainCard 
+          variant={selectedFormat === 'flashcards' ? 'selected' : 'interactive'}
           onClick={() => onFormatChange('flashcards')}
         >
-          <CardContent className="p-6">
+          <BrainCardContent>
             <div className="flex items-start space-x-4">
               <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
                 <img src={flashcardIcon} alt="Flashcards" className="w-16 h-16" />
@@ -48,17 +46,15 @@ export default function GenerationOptions({
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </BrainCardContent>
+        </BrainCard>
 
         {/* Quiz Option */}
-        <Card 
-          className={`generation-card ${
-            selectedFormat === 'quiz' ? 'selected border-primary shadow-lg' : 'border-border hover:border-primary'
-          }`}
+        <BrainCard 
+          variant={selectedFormat === 'quiz' ? 'selected' : 'interactive'}
           onClick={() => onFormatChange('quiz')}
         >
-          <CardContent className="p-6">
+          <BrainCardContent>
             <div className="flex items-start space-x-4">
               <div className="w-16 h-16 flex items-center justify-center flex-shrink-0">
                 <img src={quizIcon} alt="Quiz" className="w-16 h-16" />
@@ -75,15 +71,15 @@ export default function GenerationOptions({
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </BrainCardContent>
+        </BrainCard>
       </div>
 
       {/* Quiz Configuration */}
       {selectedFormat === 'quiz' && (
-        <Card className="p-6 bg-muted/50">
-          <CardContent className="p-0">
-            <h4 className="font-medium text-foreground mb-4">Quiz Configuration</h4>
+        <BrainCard variant="gradient" className="brain-gradient-light">
+          <BrainCardContent>
+            <h4 className="brain-heading-3 mb-4">Quiz Configuration</h4>
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-foreground mb-2">
@@ -130,8 +126,8 @@ export default function GenerationOptions({
                 </Select>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </BrainCardContent>
+        </BrainCard>
       )}
     </div>
   );

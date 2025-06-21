@@ -194,6 +194,7 @@ export default function FileUpload({ onFilesUpload }: FileUploadProps) {
                         onClick={() => removeFile(index)}
                         icon={X}
                       >
+                        Remove
                       </BrainButton>
                     </div>
                   </div>
