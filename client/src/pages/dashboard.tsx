@@ -78,11 +78,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Logo */}
-      <div className="fixed top-4 right-4 z-50">
-        <img src={brainBitesLogo} alt="Brain Bites" className="h-10 w-auto" />
-      </div>
-
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
