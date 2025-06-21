@@ -1,13 +1,4 @@
-import OpenAI from "openai";
-
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-if (!process.env.OPENAI_API_KEY) {
-  console.error("OpenAI API key is not configured");
-}
+import { openaiClient, validateOpenAIConfig, OPENAI_CONFIG, createFlashcardPrompt, createQuizPrompt } from "../utils/openai-client";
 
 interface FlashcardPair {
   question: string;
@@ -66,8 +57,8 @@ export async function generateFlashcards(
 
   try {
     console.log('Making OpenAI API call for flashcards...');
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+    const response = await openaiClient.chat.completions.create({
+      model: OPENAI_CONFIG.model,
       messages: [
         {
           role: "system",
