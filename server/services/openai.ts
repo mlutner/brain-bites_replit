@@ -70,7 +70,7 @@ export async function generateFlashcards(
         }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.7,
+      temperature: OPENAI_CONFIG.temperature,
     });
 
     console.log('OpenAI API response received');
@@ -145,8 +145,8 @@ export async function generateQuiz(
 
   try {
     console.log('Making OpenAI API call for quiz...');
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+    const response = await openaiClient.chat.completions.create({
+      model: OPENAI_CONFIG.model,
       messages: [
         {
           role: "system",
@@ -158,7 +158,7 @@ export async function generateQuiz(
         }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.7,
+      temperature: OPENAI_CONFIG.temperature,
     });
 
     console.log('OpenAI API response received for quiz');
@@ -207,8 +207,8 @@ export async function assessDifficulty(text: string): Promise<'easy' | 'medium' 
   `;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+    const response = await openaiClient.chat.completions.create({
+      model: OPENAI_CONFIG.model,
       messages: [
         {
           role: "system",
