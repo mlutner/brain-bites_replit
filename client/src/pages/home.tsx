@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { BrainCard, BrainCardContent } from "@/components/ui/brain-card";
+import { BrainButton } from "@/components/ui/brain-button";
 import { Separator } from "@/components/ui/separator";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import FileUpload from "@/components/file-upload";
@@ -302,47 +302,38 @@ export default function Home() {
 
         {/* Generate Button */}
         <section className="text-center mb-16">
-          <div className="inline-block p-1.5 bg-gradient-to-r from-primary via-primary to-secondary rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
-            <Button 
+          <div className="inline-block p-1.5 brain-gradient rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <BrainButton 
               onClick={handleGenerate}
-              disabled={isGenerating || uploadedFiles.length === 0 || !selectedFormat}
+              isLoading={isGenerating}
+              disabled={uploadedFiles.length === 0 || !selectedFormat}
               size="lg"
               className="bg-white hover:bg-gray-50 text-primary px-10 py-6 text-xl font-bold shadow-none rounded-xl border-0 hover:scale-105 transition-all duration-300"
             >
-              {isGenerating ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin mr-3"></div>
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <div className="w-5 h-5 bg-gradient-to-r from-primary to-secondary rounded-full mr-3 animate-pulse-soft"></div>
-                  Scan PDF or Text
-                </>
-              )}
-            </Button>
+              {isGenerating ? 'Generating...' : 'Scan PDF or Text'}
+            </BrainButton>
           </div>
-          <p className="text-muted-foreground mt-4 font-medium">
-            ✨ Processing typically takes 30-60 seconds
+          <p className="brain-text-muted mt-4 font-medium">
+            Processing typically takes 30-60 seconds
           </p>
         </section>
 
         {/* Loading State */}
         {isGenerating && (
           <section className="mb-12">
-            <Card className="p-8 text-center">
-              <CardContent className="pt-6">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <BrainCard className="text-center" padding="lg">
+              <BrainCardContent>
+                <div className="w-16 h-16 brain-gradient rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+                <h3 className="brain-heading-3 mb-2">
                   Generating Your Study Materials
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="brain-text-muted">
                   Our AI is analyzing your content and creating personalized study materials...
                 </p>
-              </CardContent>
-            </Card>
+              </BrainCardContent>
+            </BrainCard>
           </section>
         )}
 
@@ -366,21 +357,21 @@ export default function Home() {
           </div>
           <div className="grid gap-6 p-6 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-2xl border border-blue-200/50 shadow-sm">
             {userFiles.length === 0 ? (
-              <Card className="p-12 text-center bg-gradient-to-br from-blue-50/50 to-indigo-50/30 border-dashed border-2 border-blue-200">
-                <CardContent className="pt-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6 animate-float">
-                    <Upload className="w-10 h-10 text-blue-600" />
+              <BrainCard className="text-center brain-gradient-light border-dashed border-2" padding="lg">
+                <BrainCardContent>
+                  <div className="w-20 h-20 brain-gradient rounded-full flex items-center justify-center mx-auto mb-6 animate-float">
+                    <Upload className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-3">No files uploaded yet</h3>
-                  <p className="text-muted-foreground text-lg">
-                    Upload your first document to generate study materials and start learning smarter! 📚
+                  <h3 className="brain-heading-3 mb-3">No files uploaded yet</h3>
+                  <p className="brain-text-muted text-lg">
+                    Upload your first document to generate study materials and start learning smarter!
                   </p>
-                </CardContent>
-              </Card>
+                </BrainCardContent>
+              </BrainCard>
             ) : (
               userFiles.map((file) => (
-                <Card key={file.id} className="p-6 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 bg-white border-blue-200/50 rounded-xl hover:border-blue-300">
-                  <CardContent className="p-0">
+                <BrainCard key={file.id} variant="interactive" className="bg-white">
+                  <BrainCardContent>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center shadow-sm">
@@ -397,44 +388,24 @@ export default function Home() {
                       <div className="flex items-center space-x-3">
                         {file.hasText ? (
                           <>
-                            <Button 
+                            <BrainButton 
                               variant="outline" 
                               size="sm"
-                              disabled={generateMutation.isPending}
+                              isLoading={generateMutation.isPending && isGenerating}
                               onClick={() => handleGenerateContent(file.id, 'flashcards')}
-                              className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/30 text-primary hover:bg-gradient-to-r hover:from-primary hover:to-primary/90 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                              className="text-primary hover:bg-primary hover:text-white"
                             >
-                              {generateMutation.isPending && isGenerating ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                                  Generating...
-                                </>
-                              ) : (
-                                <>
-                                  <img src={flashcardIcon} alt="Flashcards" className="w-4 h-4 mr-2" />
-                                  Flashcards
-                                </>
-                              )}
-                            </Button>
-                            <Button 
+                              Flashcards
+                            </BrainButton>
+                            <BrainButton 
                               variant="outline" 
                               size="sm"
-                              disabled={generateMutation.isPending}
+                              isLoading={generateMutation.isPending && isGenerating}
                               onClick={() => handleGenerateContent(file.id, 'quiz')}
-                              className="bg-gradient-to-r from-secondary/10 to-secondary/5 border-secondary/30 text-secondary hover:bg-gradient-to-r hover:from-secondary hover:to-secondary/90 hover:text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                              className="text-secondary hover:bg-secondary hover:text-white"
                             >
-                              {generateMutation.isPending && isGenerating ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                                  Generating...
-                                </>
-                              ) : (
-                                <>
-                                  <img src={quizIcon} alt="Quiz" className="w-4 h-4 mr-2" />
-                                  Quiz
-                                </>
-                              )}
-                            </Button>
+                              Quiz
+                            </BrainButton>
                           </>
                         ) : (
                           <div className="flex items-center space-x-2 text-muted-foreground">
@@ -444,9 +415,9 @@ export default function Home() {
                         )}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
+                            <BrainButton variant="ghost" size="sm">
                               <MoreHorizontal className="w-4 h-4" />
-                            </Button>
+                            </BrainButton>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem 
@@ -461,8 +432,8 @@ export default function Home() {
                         </DropdownMenu>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </BrainCardContent>
+                </BrainCard>
               ))
             )}
           </div>
