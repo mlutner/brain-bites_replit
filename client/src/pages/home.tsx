@@ -452,19 +452,19 @@ export default function Home() {
           </div>
           <div className="grid gap-6 p-6 bg-gradient-to-br from-primary/5 via-primary/3 to-secondary/5 rounded-2xl border border-primary/20 shadow-sm">
             {recentGenerations.length === 0 ? (
-              <Card className="p-8 text-center">
-                <CardContent className="pt-6">
+              <BrainCard className="text-center" padding="lg">
+                <BrainCardContent>
                   <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-foreground mb-2">No study materials yet</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="brain-heading-3 mb-2">No study materials yet</h3>
+                  <p className="brain-text-muted">
                     Generate flashcards or quizzes from your uploaded files to get started.
                   </p>
-                </CardContent>
-              </Card>
+                </BrainCardContent>
+              </BrainCard>
             ) : (
               recentGenerations.map((generation) => (
-                <Card key={generation.id} className="p-6 hover:shadow-sm transition-shadow bg-white border-primary/30">
-                  <CardContent className="p-0">
+                <BrainCard key={generation.id} variant="interactive" className="bg-white">
+                  <BrainCardContent>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center border border-primary/30">
@@ -486,18 +486,17 @@ export default function Home() {
                       </div>
                       <div className="flex items-center space-x-3">
                         <Link href={`/study/${generation.id}`}>
-                          <Button variant="outline" size="sm">
-                            <Clock className="w-4 h-4 mr-2" />
+                          <BrainButton variant="outline" size="sm" icon={Clock}>
                             Study
-                          </Button>
+                          </BrainButton>
                         </Link>
-                        <Button variant="ghost" size="sm">
-                          <Download className="w-4 h-4" />
-                        </Button>
+                        <BrainButton variant="ghost" size="sm" icon={Download}>
+                          Download
+                        </BrainButton>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </BrainCardContent>
+                </BrainCard>
               ))
             )}
           </div>
