@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { BrainCard, BrainCardContent } from "@/components/ui/brain-card";
+import { BrainButton } from "@/components/ui/brain-button";
 import { FileText, Zap, Brain, ArrowRight } from "lucide-react";
 
 export default function Landing() {
@@ -13,17 +13,16 @@ export default function Landing() {
       <header className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">F</span>
+            <div className="brain-logo">
+              <div className="w-10 h-10 brain-gradient rounded-xl flex items-center justify-center">
+                <Brain className="w-6 h-6 text-white" />
               </div>
-              <span className="font-semibold text-xl text-foreground">FlashGen</span>
+              <span className="brain-heading-3">Brain Bites</span>
             </div>
             
-            <Button onClick={handleLogin} className="font-medium">
+            <BrainButton onClick={handleLogin} icon={ArrowRight} iconPosition="right">
               Sign In
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            </BrainButton>
           </div>
         </div>
       </header>
@@ -38,55 +37,54 @@ export default function Landing() {
             Upload your documents and let AI create personalized flashcards and quizzes 
             tailored to your learning needs.
           </p>
-          <Button onClick={handleLogin} size="lg" className="text-lg px-8 py-4">
+          <BrainButton onClick={handleLogin} size="lg" icon={ArrowRight} iconPosition="right">
             Get Started Free
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          </BrainButton>
         </div>
 
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-8 h-8 text-primary" />
+        <div className="brain-grid grid-cols-1 md:grid-cols-3 mb-16">
+          <BrainCard className="text-center" variant="interactive">
+            <BrainCardContent>
+              <div className="w-16 h-16 brain-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <FileText className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
+              <h3 className="brain-heading-3 mb-4">
                 Smart Document Processing
               </h3>
-              <p className="text-muted-foreground">
+              <p className="brain-text-muted">
                 Upload PDFs and text files. Our AI extracts and analyzes content automatically.
               </p>
-            </CardContent>
-          </Card>
+            </BrainCardContent>
+          </BrainCard>
 
-          <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-8 h-8 text-green-600" />
+          <BrainCard className="text-center" variant="interactive">
+            <BrainCardContent>
+              <div className="w-16 h-16 brain-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Zap className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
+              <h3 className="brain-heading-3 mb-4">
                 Instant Generation
               </h3>
-              <p className="text-muted-foreground">
+              <p className="brain-text-muted">
                 Create flashcards and quizzes in under a minute with advanced AI technology.
               </p>
-            </CardContent>
-          </Card>
+            </BrainCardContent>
+          </BrainCard>
 
-          <Card className="text-center p-6 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Brain className="w-8 h-8 text-purple-600" />
+          <BrainCard className="text-center" variant="interactive">
+            <BrainCardContent>
+              <div className="w-16 h-16 brain-gradient rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Brain className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
+              <h3 className="brain-heading-3 mb-4">
                 Adaptive Difficulty
               </h3>
-              <p className="text-muted-foreground">
+              <p className="brain-text-muted">
                 AI automatically adjusts content difficulty based on your material complexity.
               </p>
-            </CardContent>
-          </Card>
+            </BrainCardContent>
+          </BrainCard>
         </div>
 
         {/* CTA Section */}
