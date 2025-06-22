@@ -7,6 +7,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { validateFile, extractTextFromFile } from "./services/fileProcessing";
 import { generateFlashcards, generateQuiz, assessDifficulty } from "./services/openai";
+import { checkGeneratedContent } from "./services/ValidationService";
 import { generateContentSchema } from "@shared/schema";
 
 // Configure multer for file uploads
@@ -208,6 +209,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       console.log('Generation saved with ID:', generation.id);
+
+      // Perform hallucination check (async, non-blocking for response)
+      if (file.extractedText && generatedContent && generatedContent.length > 0) {
+        console.log('Performing post-generation validation check...');
+        checkGeneratedContent(file.extractedText, generatedContent)
+          .then(validationResults => {
+            console.log('Validation check results:');
+            validationResults.forEach(result => {
+              if (result.isPotentiallyHallucinated) {
+                console.warn(`Potential Hallucination for Q: "${result.item.question}" - A: "${result.item.answer}" - Reason: ${result.reasoning}`);
+              }
+              if (result.error) {
+                console.error(`Validation error for Q: "${result.item.question}" - Error: ${result.error}`);
+              }
+            });
+          })
+          .catch(validationError => {
+            console.error('Error during validation check:', validationError);
+          });
+      }
+
       res.json(generation);
 
     } catch (error) {

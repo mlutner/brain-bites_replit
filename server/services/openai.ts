@@ -34,10 +34,11 @@ export async function generateFlashcards(
     ${difficultyPrompt}
     
     Create question-answer pairs that:
-    - Cover key concepts, definitions, and important details
-    - Are clear, concise, and educational
-    - Include a mix of factual recall and conceptual understanding
-    - Vary in difficulty from basic recall to deeper analysis
+    - Cover key concepts, definitions, and important details.
+    - Are clear, concise, and highly educational.
+    - Ensure questions focus on core concepts and avoid trivial details or information likely found in document headers/footers or formatting artifacts.
+    - Include a mix of question types, such as definitions, conceptual understanding, and process-oriented questions where appropriate.
+    - Vary in difficulty from basic recall to deeper analysis if 'auto' difficulty is selected.
     
     Return a JSON object with this exact format:
     {
@@ -119,11 +120,12 @@ export async function generateQuiz(
     ${difficultyPrompt}
     
     Create ${questionCount} multiple-choice questions that:
-    - Test understanding of key concepts and details
-    - Include 4 plausible answer options each
-    - Have clear, unambiguous correct answers
-    - Include smart distractors (wrong answers that seem reasonable)
-    - Provide explanations for the correct answers
+    - Test understanding of key concepts and important details.
+    - Ensure questions are unambiguous, fair, and relevant to educational content. Avoid questions about document metadata, formatting artifacts, or overly trivial details.
+    - Include 4 plausible answer options for each question.
+    - Have one clear, unambiguously correct answer.
+    - Feature smart distractors: incorrect options that are plausible but clearly wrong upon closer examination.
+    - Provide a concise explanation for why the correct answer is right.
     
     Return a JSON object with this exact format:
     {

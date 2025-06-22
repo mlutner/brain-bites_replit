@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import { extractTextWithMistral } from './mistralOcr';
+import { OcrManager } from './OcrManager';
 
 const readFile = promisify(fs.readFile);
+const ocrManager = new OcrManager(); // Using default Mistral provider
 
 export async function extractTextFromFile(filePath: string, mimeType: string): Promise<string> {
   try {
@@ -55,9 +56,9 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
       const timeout = setTimeout(() => {
         resolve('AI processing timeout - unable to process');
       }, 60000); // Longer timeout for AI processing
-      
-      // Handle the Mistral OCR process with full error isolation
-      extractTextWithMistral(filePath, 'application/pdf')
+
+      // Use OcrManager for AI-powered text extraction
+      ocrManager.extractText(filePath, 'application/pdf')
         .then((text: string) => {
           clearTimeout(timeout);
           resolve(text || 'No text extracted via AI processing');
@@ -68,22 +69,22 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
           resolve('AI text processing failed - document may contain complex formatting');
         });
     });
-    
-    if (ocrText && ocrText.trim().length > 50 && 
-        !ocrText.includes('could not be processed') && 
+
+    if (ocrText && ocrText.trim().length > 50 &&
+        !ocrText.includes('could not be processed') &&
         !ocrText.includes('processing timeout') &&
         !ocrText.includes('processing failed')) {
-      console.log('AI text extraction successful:', ocrText.length, 'characters');
+      console.log('AI text extraction successful via OcrManager:', ocrText.length, 'characters');
       return ocrText;
     } else {
-      console.log('AI extracted minimal text or returned error message:', ocrText?.length || 0, 'characters');
+      console.log('AI (OcrManager) extracted minimal text or returned error message:', ocrText?.length || 0, 'characters');
     }
-    
+
   } catch (aiError) {
-    console.error('AI text extraction fallback failed, continuing with direct text extraction:', aiError);
+    console.error('AI text extraction (OcrManager) fallback failed, continuing with direct text extraction:', aiError);
     // Don't let AI errors crash the server - just log and continue
   }
-  
+
   // Step 3: Final fallback - return any text we found, even if minimal
   if (extractedText.trim().length > 0) {
     console.log('Using directly extracted text as fallback:', extractedText.length, 'characters');
